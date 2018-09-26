@@ -1,0 +1,218 @@
+{{extend 'layout_grove.html'}}
+
+<div class='container content'>
+
+	<div style="min-height:400px;">
+		{{if records>0:}}
+
+			
+			<div class="row">
+				<div class="col-xs-7">
+					<div class="row">
+						<div class="pull pull-left" style="margin-left:10px;padding:10px;">
+							
+							{{="  Mensajes: "}}<span class='badge'>{{="%s"% records}}</span> 
+						</div>
+
+						<div class="pull pull-left" style="margin-left:10px;padding:10px;">
+							{{="  Sin leer: "}}<span id="notreads" class='badge'>{{="%s"% notreads}}</span> 
+						</div>
+
+						{{if records>=items_per_page:}}
+							<div class="pull pull-right">
+								{{=pagination}}
+							</div>
+						{{pass}}
+					</div>
+					<div>
+						<table class="table table-hover table-striped well" id="tablemsgs" style="font-size:12px;">
+							<thead>
+								<tr>
+									<th>{{="Nombre"}}</th>
+									<th>{{="Email"}}</th>
+									<th align="right" style="text-align:right">{{="Leído"}}</th>
+									<th>{{="Fecha creación"}}</th>
+									<th style="display:none"></th>
+									<th style="display:none"></th>
+									<th style="display:none"></th>
+									<th style="display:none"></th>
+									<th style="display:none"></th>
+								</tr>
+							</thead>
+							<tbody>
+							{{for msg in messages:}}
+								<tr id="{{=msg.id}}" style="cursor:pointer;">
+									
+									<td class="msgname" width="45%">{{=msg.regnews.name}}</a></td>
+									<td class="msgemail"width="30%">{{=msg.regnews.email}}</td>
+									<td class="msgleido" width="5%" align="right" style="text-align:right">
+										{{if msg.messread:}}
+											<span class="label label-success">Leído</span>
+										{{else:}}
+											<span class="label label-warning">Sin leer</span>
+										{{pass}}
+									</td>
+									<td class="msgdate" width="20%">{{=msg.created_on.strftime("%d-%m-%Y  %H:%M")}}</td>
+									<td class="msgphone" style="display:none">{{=msg.regnews.phone}}</td>
+									<td class="msgcity" style="display:none">{{=msg.regnews.city}}</td>
+									<td class="msgprovince" style="display:none">{{=msg.regnews.province}}</td>
+									<td class="msgoculto" style="display:none">{{=msg.message}}</div>
+									<td class="msgread" style="display:none">{{=INPUT(_type='checkbox', value=msg.messread, _style="margin-top:0px;")}}</div>	
+									
+								</tr>
+
+							{{pass}}
+							</tbody>
+						</table>
+					</div>
+					{{if records>=items_per_page:}}
+					<div class="pull pull-right">
+						{{=pagination}}	
+					</div>
+					{{pass}}
+				</div>
+				<div class="col-xs-5">
+					<div style="min-height:250px;">
+						<div>Datos:</div> <span class="pull pull-right" id="msgdate" style="padding:18px;"></span>
+						<address id="datamsg" class="well">
+							  <strong id="msgname"></strong><br>
+							  <span id="msgemail"></span><br>
+							  <span id="msgphone"></span><br>
+							  <span id="msgcity"></span><br>
+							  <span id="msgprovince"></span><br>
+							  <span id="msgread"></span><br>
+						</address>
+						<div>Mensaje:</div>
+						<div id="msgoculto" class="well">
+						</div>
+					</div>
+				</div>
+			</div>
+		{{else:}}
+		
+			<div class="alert alert-info">
+				{{="No hay mensajes"}} 
+			</div>
+		
+		{{pass}}
+	</div>
+</div>
+
+<script type="text/javascript">
+	var dict={}
+	var conversion={}
+	conversion["True"]="<input type='checkbox' value='on' checked='checked'>"
+	conversion["False"]="<input type='checkbox' value='on'>"
+	jQuery(document).ready(function(){
+
+		{{#inyectando python dentro de un dict en javascript}}
+		{{for msg in messages:}}
+			dict["{{=msg.id}}"]="{{=msg.messread}}";
+		{{pass}}
+
+	});
+
+
+	var tr;
+	var id;
+	var msgleido;
+	var notreads=jQuery('#notreads');
+	var number= parseInt(notreads.html());
+	var input;
+	if (number>0) {
+		notreads.addClass('badge-important');
+	}
+	jQuery(document).on('click','table tbody tr',function(){
+		tr=jQuery(this);
+		id = tr.attr('id');
+		jQuery('tr').removeClass('rowselected');
+		jQuery(this).addClass('rowselected');
+		jQuery('div#msgoculto').html(tr.children('td.msgoculto').html());
+		jQuery('#msgname').html(tr.children('td.msgname').html());
+		jQuery('#msgemail').html("<a href='mailto:"+tr.children('td.msgemail').html()+"'>"+tr.children('td.msgemail').html()+"</a>");
+		jQuery('#msgphone').html(tr.children('td.msgphone').html());
+		jQuery('#msgdate').html(tr.children('td.msgdate').html());
+		jQuery('#msgcity').html(tr.children('td.msgcity').html());
+		jQuery('#msgprovince').html(tr.children('td.msgprovince').html());
+		
+		jQuery('#msgread').html("<small>marcar como leído: </small>" + conversion[dict[id]]);
+
+		msgleido=tr.children('td.msgleido');
+        tr.unbind();
+	});
+	jQuery(document).on('click','input[type="checkbox"]',function(){
+			input=jQuery(this);
+			if (input.is(':checked')) {
+				jQuery.ajax({
+		            beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+		            type: "POST",
+		            cache: false,
+		            data: {'id':id, 'read': true },
+		            dataType: 'text',
+		            url:'{{=URL(r=request,c='administrator', f='setread')}}',
+		            success: function(data) {
+		            	if(data=="true") {
+		            		
+		                	jQuery('.flash').html('Mensaje leído').slideDown('slow', function(){jQuery(this).delay(2000).slideUp()});
+		                	input.attr('checked', true);
+		                	
+		                	dict[id]="True";
+		                	msgleido.children('span').removeClass('label-warning').addClass('label-success').html('Leído');
+		                	notreads=jQuery('#notreads');
+		                	var number= parseInt(notreads.html());
+		                	if (number!=0) {
+		                	
+		                		number= number-1;
+		                		if (number==0){
+									notreads.removeClass('badge-important');
+								}
+		                	}
+							notreads.html(number);
+						
+		                }
+		            },
+		            error: function(obj,msg,thr) {input.attr('checked', false);}
+		        });
+				tr.unbind();
+				input.unbind();
+			} else {
+				jQuery.ajax({
+		            beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+		            type: "POST",
+		            cache: false,
+		            data: {'id':id, 'read': false },
+		            dataType: 'text',
+		            url:'{{=URL(r=request,c='administrator', f='setread')}}',
+		            success: function(data) {
+		            	if(data=="true") {
+		            		
+		                	jQuery('.flash').html('Mensaje sin leer').slideDown('slow', function(){jQuery(this).delay(2000).slideUp()});
+		                	input.attr('checked', false);
+		                	
+		                	dict[id]="False";
+		                	msgleido.children('span').removeClass('label-success').addClass('label-warning').html('Sin leer');
+		                	notreads=jQuery('#notreads');
+		                	var number= parseInt(notreads.html());
+		                	
+		                	number=number+1;
+		                	
+							if (notreads.hasClass('badge-important')==false) {
+								notreads.addClass('badge-important');
+							}
+		    	
+		                	notreads.html(number);
+		        
+		                }
+		            },
+		            error: function(obj,msg,thr) {input.attr('checked', false);}
+		        });
+				
+			}
+        	tr.unbind();
+			input.unbind();
+		});
+	
+
+
+	
+</script>

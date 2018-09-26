@@ -1,0 +1,173 @@
+{{extend 'layout_grove.html'}}
+<div class="widewrapper pagetitle">
+	<div class="container">
+		<h1>{{="Contacta con nosotros"}}</h1>
+	</div>
+</div>
+
+<div class="widewrapper weak-highlight">
+	<div class="container content">
+		{{form.custom.begin}}
+		{{	form.element('input[name=name]')['_class']='form-control'
+			form.element('input[name=email]')['_class']='form-control'
+			form.element('input[name=phone]')['_class']='form-control'
+			form.element('input[name=city]')['_class']='form-control'
+			form.element('input[name=province]')['_class']='form-control'
+			form.element('textarea[name=message]')['_class']='form-control'
+		}}
+			<form action="" class="form-horizontal" enctype="multipart/form-data" method="post" style="z-index">
+				<fieldset>
+					
+					<div class="row">
+						<div class="col-xs-12">
+							<label class="control-label" for="no_table_name" id="no_table_name__label">Nombre: </label>
+						</div>
+						<div class="col-xs-6">
+							{{=form.custom.widget.name}}
+							<span class="help-inline"></span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<label class="control-label" for="no_table_email" id="no_table_email__label">Email: </label>
+						</div>
+						<div class="col-xs-4">
+							{{=form.custom.widget.email}}
+							
+						</div>
+						<div class="col-xs-8">
+							<span class="help-inline">su correo electrónico no será publicado <small> - <a href="#textpolicy" data-target="#textpolicy" data-toggle="modal">Política de privacidad</a></small></span>	
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<label class="control-label" for="no_table_name" id="no_table_name__label">Teléfono (<span><small>opcional</small></span>): </label>
+						</div>
+						<div class="col-xs-4">
+							{{=form.custom.widget.phone}}
+							
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<label class="control-label" for="no_table_name" id="no_table_name__label">{{="Población"}} (<span><small>opcional</small></span>): </label>
+						</div>
+						<div class="col-xs-4">
+							{{=form.custom.widget.city}}
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<label class="control-label" for="no_table_name" id="no_table_name__label">Provincia (<span><small>opcional</small></span>): </label>
+						</div>
+						<div class="col-xs-4">
+							{{=form.custom.widget.province}}
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<label class="control-label" for="no_table_comment" id="no_table_comment__label">Mensaje: </label>
+						</div>
+						<div class="col-xs-8">
+							{{=form.custom.widget.message}}
+						</div>
+					</div>
+					
+					<div class="control-group">
+						<label class="control-label" for="no_table_rnews" id="no_table_rnews__label"></label>
+						<div class="controls">	
+							{{form.custom.widget.rnews['_type']='checkbox'}}
+							{{form.custom.widget.rnews['_checked']=True}}
+							{{=form.custom.widget.rnews}}
+							<span class="help-inline">Quiero recibir noticias periódicamente de gextiendas.es <!-- - <small><a href="#">Términos y condiciones</a> --></small></span>
+						</div>
+					</div>					
+					
+					<div class="form-actions">
+						<input class="btn btn-primary" type="submit" value="Enviar">
+					</div>
+				</fieldset>
+				{{=form.hidden_fields()}}
+			</form>
+
+			{{form.custom.end}}
+
+		</div>
+	</div>
+</div>
+<div id="textpolicy" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		    <h3 id="myModalLabel">{{="Política de privacidad Gextiendas"}}</h3>
+		  </div>
+		  <div class="modal-body">
+
+		    {{=XML("""
+		    		<p>
+						<h5>Política de confidencialidad de los datos - Web </h5>
+						Mediante el presente aviso, el titular del presente sitio web www.gextiendas.es propiedad de Gestión Experta de Sistemas Computacionales S.L. inscrita en el Registro Mercantil de Málaga T 5074, L 3981, F 36, S 8, H MA115900, I/A 1 (30.11.12) y domicilio en C/ Isabel la Católica Nº1, Bloque 7, 3ºB, Fuengirola, Málaga, informa a los usuarios de la página web de su <strong>política de protección de datos de carácter personal.</strong>
+					</p>
+					<p>
+						La utilización del sitio web de Gestión Experta de Sistemas Computacionales S.L., y de cualquiera de los servicios que se incorporan en él supone la plena aceptación de las condiciones que se manifiestan en la política de privacidad que se expone.
+					</p>
+					<p>
+						<h5>Recogida de datos y consentimiento para tratarlos</h5>
+						En cumplimiento de la Ley 15/1999, de 13 de diciembre, de Protección de Datos de Carácter Personal, se informa de que los datos personales que se solicitan en nuestros formularios o que usted nos facilite de forma consciente y expresa por cualquier medio se incluirán en un fichero de datos personales, debidamente inscritos en la Agencia Española de Protección de Datos. cuyo responsable y titular es Gestión Experta de Sistemas Computacionales S.L.
+					</p>
+					<p> 
+						Gestión Experta de Sistemas Computacionales S.L., como responsable del fichero y quienes intervengan en cualquier fase del tratamiento de los datos de carácter personal están obligados al secreto profesional respecto de los mismos y al deber de guardarlos. Obligaciones que subsistirán aun después de finalizar sus relaciones con el titular del fichero o, en su caso, con el responsable del mismo.
+					</p>
+					<p>
+						Gestión Experta de Sistemas Computacionales S.L., no se responsabiliza del tratamiento de los datos personales de las páginas web a las que el usuario pueda acceder por medio de los distintos enlaces que contiene nuestra página web. 
+					</p>
+					<p>
+						Esta página web se rige por la normativa exclusivamente aplicable en España, a la que quedan sometidas las personas, tanto nacionales como extranjeras, que utilicen esta web. 
+					</p>
+					<p>
+						<h5>Finalidades del tratamiento</h5>
+						Los datos que solicitamos son los adecuados, pertinentes y estrictamente necesarios para la finalidad con la que se recogen. Nunca serán utilizados con una finalidad diferente a aquella para la que han sido cedidos, y en ningún caso el usuario está obligado a facilitárnoslos. 
+					</p>
+					<p>
+						A menos que específicamente se establezca lo contrario, se considerará necesario rellenar todos los campos de cada formulario. Para ello el usuario tendrá que completarlos con datos verdaderos, exactos y actualizados. El usuario será el único responsable de cualquier daño o perjuicio, directo e indirecto, que ocasione a Gestión Experta de Sistemas Computacionales S.L., o a cualquier tercero por rellenar los formularios con datos falsos, inexactos, incompletos, no actualizados o que contengan datos de terceros.
+					</p>
+					<p>
+						<h5>Derecho de acceso, rectificación, oposición y cancelación de los datos personales del usuario.</h5>
+						El consentimiento se entenderá prestado en tanto no comunique por escrito la revocación del mismo. El titular de los datos se compromete a comunicar por escrito a GESTIÓN EXPERTA DE SISTEMAS COMPUTACIONALES, S.L cualquier modificación que se produzca en los datos aportados.  Vd. podrá en cualquier momento ejercer el derecho de acceso, rectificación, cancelación y oposición en los términos establecidos en la Ley Orgánica 15/1999 ante el responsable del fichero, GESTIÓN EXPERTA DE SISTEMAS COMPUTACIONALES, S.L  en la siguiente dirección: C/ ISABEL LA CATÓLICA, Nº1, BLOQUE 7  3ºB, 29640, Fuengirola, (Málaga)
+					</p>
+					<p>
+						<h5>Cesión de datos</h5>
+					
+					
+						Informamos que los datos son tratados confidencialmente y utilizados exclusivamente en el ámbito interno de la empresa y para las finalidades indicadas, de modo que no los cedemos ni comunicamos a ningún tercero, a menos que el usuario nos autorice a ello expresamente y en los casos previstos legalmente. 
+					</p>
+					<p>
+						<h5>Modificación de esta política de confidencialidad</h5>
+						Esta política de confidencialidad ha sido establecida con fecha 10 de enero de 2013. TuVozlegal se reserva el derecho en el futuro de modificar su política de protección de datos de acuerdo con su práctica empresarial. 
+						En cualquier caso, si Gestión Experta de Sistemas Computacionales S.L. introdujera alguna modificación, el nuevo texto será publicado en esta misma página, donde el usuario podrá tener conocimiento actualizado de la política de protección de datos. 
+					</p>
+
+					""")}}
+
+
+
+		  </div>
+		  <div class="modal-footer">
+		    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+		  </div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	jQuery('div#_autocomplete_cities_poblacion_div').css({'z-index':'100'});
+	jQuery('div#_autocomplete_province_provincia_div').css({'z-index':'100'});
+
+	
+    jQuery("form").bind("keypress", function(e) {
+            if (e.keyCode == 13) return false;
+      });
+
+</script>

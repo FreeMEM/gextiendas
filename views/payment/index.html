@@ -1,0 +1,92 @@
+{{extend 'layout_grove.html'}}
+<div class="container content">
+	<div class="row">
+		<div class="col-lg-4">
+			<h1>Elija forma de pago</h1>
+			<div class="radio">
+				<label>
+					<input type="radio" name="optionsRadios" id="paypal" value="paypal" checked> Paypal
+					<table border="0" cellpadding="10" cellspacing="0" align="center"><tr><td align="center"></td></tr><tr><td align="center"><a href="https://www.paypal.com/es/webapps/mpp/paypal-popup" title="Cómo funciona PayPal" onclick="javascript:window.open('https://www.paypal.com/es/webapps/mpp/paypal-popup','WIPaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700'); return false;"><img src="https://www.paypalobjects.com/webstatic/mktg/logo-center/logotipo_paypal_tarjetas.jpg" border="0" alt="Marcas de aceptación"></a></td></tr></table>
+				</label>
+			</div>
+			<div class="radio">
+				<label>
+					<input type="radio" name="optionsRadios" id="bank" value="bank">
+					
+						Transferencia bancaria {{if flatrate:}} {{="periódica"}}{{pass}}
+				</label>
+				<p>
+					Para que identifiquemos su pago, detalle en el concepto de su transferencia {{if flatrate:}} {{="periódica"}}{{pass}} la siguiente referencia: <strong>{{=order.payment_code.code}}</strong>
+				
+				</p>
+			</div>
+			<div class="pull pull-right">
+				<div class="btn-group">
+                	<button class="btn btn-grove-two btn-xlg" id="checkout" onClick="checkout();"><i class="icon-ok-circle icon-white"></i> Confirmar</button>
+            	</div>
+            </div>
+
+		</div>
+
+		
+
+		<div class="col-lg-8">
+			<h1>Datos fiscales</h1>
+			<address>
+				{{if fiscal.fiscalname:}}
+  					<strong>{{=fiscal.fiscalname}}</strong><br>
+  				{{else:}}
+  					{{=auth.user.first_name}} {{=auth.user.last_name}}<br>	
+  				{{pass}}
+  				{{=fiscal.tax_identification}}<br>
+  				{{=fiscal.address}}<br>
+  				{{=fiscal.postal_code}} {{=fiscal.city}}, {{=fiscal.province}}<br>
+  				{{=fiscal.country}}<br>
+			</address>
+			<h2>Datos del pedido</h2>
+			<p><strong>Fecha </strong>{{=order.ordered_at.strftime("%d-%m-%Y")}}</p>
+			<table class="table table-hover table-striped">
+				<thead>
+					<th>cantidad</th>
+					<th>concepto</th>
+					<th style="text-align:right;">precio</th>
+					<th style="text-align:right;">total</th>
+				</thead>
+				<tbody>
+					{{for item in orderlist:}}
+						<tr>
+							<td>{{=item.quantity}}</td>
+							<td>{{=item.product.name}}</td>
+							<td style="text-align:right;">{{=item.price}}</td>
+							<td style="text-align:right;">{{="%.2f" % (float(item.price)*float(item.quantity))}}
+						</tr>
+					{{pass}}
+				</tbody>
+			</table>
+			<div class="pull pull-right">
+				<p style="text-align:right; margin-right:25px">
+					<span>total: </span><span>{{="%s €"%order.total}}</span>
+				</p>
+				<p style="text-align:right;margin-right:25px">
+					<span> 21% IVA: </span> <span>{{="%s €"%order.totaltax}}</span>
+				</p>
+				<div class="well"  style="text-align:right;">
+					<span> <strong>Total pedido:</strong> </span><span>{{="%.2f €"% (float(order.total)+float(order.totaltax))}}</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+
+	function checkout() {
+		if (jQuery('input[type="radio"]:checked').val()=='bank') {
+			window.location="{{=URL(request.application, 'payment','bankcheckout', host=True)}}";
+		} else if  (jQuery('input[type="radio"]:checked').val()=='paypal'){
+			window.location="{{=URL(request.application, 'payment','paypalcheckout', vars=dict(flatrate=flatrate, plan=request.vars.plan), host=True)}}";
+		}
+	}
+
+</script>

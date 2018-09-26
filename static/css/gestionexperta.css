@@ -1,0 +1,165 @@
+
+
+.bottom h1 {
+	font:bold 34pt arial;
+	color:#9cf;
+	margin:0;
+	text-shadow:#64665b 0px 2px 1px;
+}
+
+.bottom p {
+	color:#56584e;
+	font-size:20px;
+  font-style:italic;
+	text-shadow:#f0f3d8 0px 1px 1px;
+}
+
+
+tr.selected {
+	background-color: #D9EDF7;
+}
+
+td.edit {cursor:pointer;}
+
+#layerslider div.x-large-caption {
+  font-size: 48px;
+}
+#layerslider div.x-large-caption p {
+  background-color: rgba(0, 0, 0, 0.3);
+  display: inline-block;
+  margin: 2px 0 0 0;
+  line-height: 48px;
+  padding: 0 13px 0 13px;
+}
+
+#layerslider div.medium-caption {
+  font-size: 28px;
+  background-color: rgba(0, 0, 0, 0.3);
+  line-height: 28px;
+  padding: 10px 13px 0 13px;
+  display: inline-block;
+}
+
+
+/* Esto hace que el footer esté pegado al suelo*/
+
+@footer-height: 15em;
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin: 0 0 @footer-height !important; /* bottom = footer height */
+  padding-bottom:150px;
+}
+
+footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: @footer-height;
+  width: 100%;
+}
+
+.centralheadline {
+  margin: 15px 0 15px 0;
+  padding: 20px 0 20px 0;
+  text-align: center;
+  font-size: 24px;
+}
+
+
+
+/* CSS para la animación y localización de los DIV de cookies */
+ 
+@keyframes desaparecer
+{
+0%    {bottom: 0px;}
+80%   {bottom: 0px;}
+100%    {bottom: -50px;}
+}
+ 
+@-webkit-keyframes desaparecer /* Safari and Chrome */
+{
+0%    {bottom: 0px;}
+80%   {bottom: 0px;}
+100%    {bottom: -50px;}
+}
+ 
+@keyframes aparecer
+{
+0%    {bottom: -38px;}
+10%   {bottom: 0px;}
+90%   {bottom: 0px;}
+100%    {bottom: -38px;}
+}
+ 
+@-webkit-keyframes aparecer /* Safari and Chrome */
+{
+0%    {bottom: -38px;}
+10%   {bottom: 0px;}
+90%   {bottom: 0px;}
+100%    {bottom: -38px;}
+}
+#cookiesms1:target {
+    display: none;
+}
+.cookiesms{ 
+  width:100%;
+  height:43px;
+  margin:0 auto;
+  padding-left:1%;
+        padding-top:5px;
+        font-size: 1.2em;
+  clear:both;
+        font-weight: strong;
+color: #333;
+bottom:0px;
+position:fixed;
+left: 0px;
+background-color: #CAE6F7;
+opacity:0.90;
+text-align: center;
+filter:alpha(opacity=90); /* For IE8 and earlier */
+transition: bottom 1s;
+-webkit-transition:bottom 1s; /* Safari */
+-webkit-box-shadow: 2px -2px 1px rgba(50, 50, 50, 0.56);
+-moz-box-shadow:    2px -2px 1px rgba(50, 50, 50, 0.56);
+box-shadow:         2px -2px 1px rgba(50, 50, 50, 0.56);
+z-index:999999999;
+}
+ 
+.cookiesms:hover{
+bottom:0px;
+}
+.cookies2{
+background-color: #CAE6F7;
+display:inline;
+opacity:0.90;
+filter:alpha(opacity=90);
+position:absolute; 
+left:1%; 
+top:-30px;
+font-size:15px;
+height:30px;
+padding-left:25px;
+padding-right:25px;
+-webkit-border-top-right-radius: 15px;
+-webkit-border-top-left-radius: 15px;
+-moz-border-radius-topright: 15px;
+-moz-border-radius-topleft: 15px;
+border-top-right-radius: 15px;
+border-top-left-radius: 15px;
+-webkit-box-shadow: 2px -2px 1px rgba(50, 50, 50, 0.56);
+-moz-box-shadow:    2px -2px 1px rgba(50, 50, 50, 0.56);
+box-shadow:         2px -2px 1px rgba(50, 50, 50, 0.56);
+}
+ 
+/* Fin del CSS para cookies */
+
+
+.border-left-row {
+    border-left: 1px solid #ccc;
+}

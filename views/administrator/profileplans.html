@@ -1,0 +1,177 @@
+{{extend 'layout_grove.html'}}
+<div class="container">
+	<div style="margin-top:5px;">
+		{{=MENU(response.menu_products, _class='nav nav-tabs',li_active="active")}}
+	<div>
+	<div style="min-height:400px;">
+		{{if records>0:}}
+			<form>
+				<input type="hidden" name="priceplan" value="0">
+				<input type="hidden" name="product" value="0">
+			</form>
+			<table class="table table-hover table-striped content" style="font-size:12px; margin-top:5px;">
+				<thead>
+					<tr>
+						<th>{{="Plan "}}</th>
+						<th>{{="Producto"}}</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+
+
+							<div class="btn-group">
+								<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+									<span id="priceplandropdown">Elige plan</span>
+									<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									{{for pp in priceplans:}}
+										<li><a href="#" class="selectpriceplan" priceplan="{{=pp.id}}">{{=pp.planname}}</a></li>
+									{{pass}}
+								</ul>
+							</div>
+
+
+	            		</td>
+						<td>
+							<div class="btn-group">
+	                			<a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+				                    <span id="productdropdown">Elige producto</span>
+				                    <span class="caret"></span>
+				                </a>
+				                <ul class="dropdown-menu">
+									{{for p in products:}}
+										<li><a href="#" class="selectproduct" product="{{=p.id}}">{{=p.name}}</a></li>
+									{{pass}}
+				                </ul>
+	            			</div>
+	            		</td>
+	            		<td>
+	            			<div class="btn-group">
+				                <button class="btn btn-default" id="btnadd">
+				                    <i class="glyphicon glyphicon-plus"><i></i></i>
+				                    {{="Añadir"}}
+				                </button>
+				            </div>
+				         </td>
+					</tr>
+				
+					{{for pf in profileplans:}}
+							
+						<tr id="{{=pf.profileplans.id}}" >
+							<td width="30%">{{=pf.priceplans.planname}}</td>
+							<td width="69%">{{=pf.products.name}}</td>
+							<td width="1%" style="cursor:pointer;" align="center" onClick="del_profileplans({{=pf.profileplans.id}})">{{=XML("<i class='glyphicon glyphicon-remove'></i>")}}</td>
+						</tr>
+					{{pass}}
+				
+				</tbody>
+			</table>
+
+		{{else:}}
+		
+			<div class="alert alert-info">
+				{{="No hay productos"}} 
+			</div>
+		
+		{{pass}}
+	</div>
+</div>
+
+<div id="modaldelete" class="modal fade"  role="dialog" aria-labelledby="modaldelete" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">×</button>
+				<h3>Confirmación de borrado</h3>
+			</div>
+
+	  		<div class="modal-body">
+    			<p>El borrado será permanente, ¿está seguro de querer eliminar el producto de este plan?</p>
+  			</div>
+  			<div class="modal-footer">
+    			<button class="btn btn-inverse" data-dismiss="modal">Cancelar</button>
+    			<button class="btn btn-primary" id="remove">Borrar</button>
+  			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+	/*jQuery('tr').on('click', function(){
+		window.location="{{#=URL(request.application,'administrator','editproduct')}}"+"/?productid="+jQuery(this).attr('id');	
+	});*/
+	var profileplan_id;
+
+	jQuery(document).ready(function(){
+		jQuery('div#modaldelete').modal('hide');
+
+		var priceplan=jQuery('input[name="priceplan"]').attr('value');
+		var product=jQuery('input[name="product"]').attr('value');
+		if ((priceplan==0) && (product==0)) {
+			console.log("llego");
+			jQuery('button#btnadd').prop('disabled', true);
+
+		}
+	});
+
+	jQuery('a.selectpriceplan').click(function() {
+		jQuery('span#priceplandropdown').html(jQuery(this).html());
+		jQuery('input[name="priceplan"]').attr('value', jQuery(this).attr('priceplan'));
+		var priceplan=jQuery('input[name="priceplan"]').attr('value');
+		var product=jQuery('input[name="product"]').attr('value');
+		if ((priceplan!=0) && (product!=0)) {
+			console.log("llego");
+			jQuery('button#btnadd').prop('disabled', false);
+
+		}
+	});
+	jQuery('a.selectproduct').click(function() {
+		jQuery('span#productdropdown').html(jQuery(this).html());
+		jQuery('input[name="product"]').attr('value', jQuery(this).attr('product'));
+		var priceplan=jQuery('input[name="priceplan"]').attr('value');
+		var product=jQuery('input[name="product"]').attr('value');
+		if ((priceplan!=0) && (product!=0)) {
+			console.log("llego");
+			jQuery('button#btnadd').prop('disabled', false);
+
+		}
+	});
+
+	jQuery('button#btnadd').click(function(){jQuery('form').submit()});
+
+
+	function del_profileplans(id){
+		profileplan_id=id;
+		jQuery('div#modaldelete').modal('show');
+
+	}
+
+	jQuery('button#remove').click(function(){
+	    jQuery.ajax({
+	      beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+	      type: "POST",
+	      cache: false,
+	      dataType: 'text',
+	      data:{'deleteid':profileplan_id},
+	      url: "{{=URL('administrator','del_profileplans')}}",
+	      success: function(result) {
+	        if (result=="OK") {
+				window.location = "{{=URL('administrator','profileplans')}}";
+	        } else {
+	        	jQuery('div#modaldelete').modal('hide');	
+	        	jQuery('.flash').html('Ocurrió un error y no se pudo finalizar el borrado').slideDown();
+	        }
+	      },
+	      error: function(obj,msg,thr) {
+	      	jQuery('div#modaldelete').modal('hide');
+	      	jQuery('.flash').html("Ocurrió un error y no se pudo finalizar el borrado. error obj:  "+obj+" error msg:  "+msg+" thr:  "+thr).slideDown();
+	      }
+	    });
+  	});
+	
+</script>

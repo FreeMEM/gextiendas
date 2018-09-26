@@ -1,0 +1,258 @@
+{{extend 'layout_grove.html'}}
+
+
+<div class="container content">
+	<div class="row">
+		<div class="col-md-5">
+			<!-- {{#=SELECT(*[OPTION(v,_value=k) for (k,v) in shop], _name="membership")}} -->
+				<span> <strong>Elige host/tienda </strong> </span>
+				<div class="btn-group">
+					<a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+						<span id="productdropdown">{{="Elige web/host"}}</span>
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a href="#" class="selecthost" host="0">Ningún host/web asociado</a></li>
+						{{for s in shop:}}
+							<li><a href="#" class="selecthost" host="{{=s.id}}">{{=s.host}} - {{=s.name}}</a></li>
+						{{pass}}
+					</ul>
+				</div>
+		</div>
+		<div class="col-md-7">
+			<div class="alert alert-warning" role="alert">
+				{{=XML('<strong>Sólo se generán los contratos</strong> de las filas con la columna "Generar" seleccionada')}}
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+
+			<table class="table table-hover" style="font-size:11px" id="contractstable">
+				<thead>
+					<th width="5%">Generar</th>
+					<th width="25%">{{="Producto"}}</th>
+					<th width="10%">{{="Precio"}}</th>
+					<th width="5%">{{="Cant."}}</th>
+					<th width="20%">{{="Opciones"}}</th>
+					<th width="20%">{{="Fechas"}}</th>
+					<th width="15%">{{="Forma de pago"}}</th>
+					
+				</thead>
+				<tbody>
+
+					{{for contract in contractedproducts:}}
+						<tr orderlist="{{=contract.orderlist.id}}" contractedproducts="{{=contract.contractedproducts.id}}" class="{{=('','success')[contract.contractedproducts.orderlist!=None]}}">
+							<td>
+								<div class="checkbox" style="margin-top:0">  
+									{{
+										if contract.contractedproducts.orderlist:
+											=XML('<input type="checkbox" class="checkcontract" checked="checked">')
+										else:
+											=XML('<input type="checkbox" class="checkcontract">')
+										pass
+								}}
+							</td>
+							<td>{{=contract.products.name}}</td>
+							<td>{{=contract.products.price}}</td>
+							<td class="quantity">{{=(contract.orderlist.quantity,contract.contractedproducts.quantity)[contract.contractedproducts.quantity!=None]}}</td>
+							<td>
+								<ul class="list-group">
+									<li class="list-group-item">
+										Periodicidad: <strong class="period">
+										{{
+											if not contract.contractedproducts.id:
+												=periodicity[contract.products.min_period]
+											else:
+												=periodicity[contract.contractedproducts.period]
+											pass
+
+										}}</strong>
+
+
+
+
+									</li>
+									<li class="list-group-item">
+										<div class="checkbox" style="margin-top:0; margin-bottom:0">
+											<label>
+												{{
+													if contract.contractedproducts.autorenove:
+														=XML('<input class="autorenove" type="checkbox" checked="checked">')	
+													elif contract.products.suscription:
+														=XML('<input class="autorenove" type="checkbox" checked="checked">')
+													else:
+														=XML('<input class="autorenove" type="checkbox">')	
+													pass
+												}}
+											Autorenove </label>
+										</div>
+									</li>
+									<li class="list-group-item">
+										<div class="checkbox" style="margin-top:0; margin-bottom:0">
+											<label>
+											{{
+												if contract.contractedproducts.automatics_action:
+				  									=XML('<input class="automatics_action" type="checkbox" checked="checked">')									
+												else:
+													=XML('<input class="automatics_action" type="checkbox">')
+												pass
+											}}
+											Automatizaciones </label>
+										</div>
+									</li>
+									<li class="list-group-item">
+										<div class="checkbox" style="margin-top:0; margin-bottom:0"> 
+											{{
+												if contract.contractedproducts.credit_annotation:
+				  									=XML('<input class="credit_annotation" type="checkbox" checked="checked">')									
+												else:
+													=XML('<input class="credit_annotation" type="checkbox">')
+												pass
+											}}
+											{{="Apuntar crédito"}} 
+
+											{{if contract.products.builtin==False:}}
+												<span class="label label-danger">cuidado</span>
+											{{pass}}
+
+											 </label>
+										</div>
+									</li>
+									<li class="list-group-item">
+										<div class="checkbox" style="margin-top:0; margin-bottom:0">
+											<label>
+											{{
+												if contract.contractedproducts.notifications:
+				  									=XML('<input class="notifications" type="checkbox" checked="checked">')									
+												else:
+													=XML('<input class="notifications" type="checkbox">')
+												pass
+											}}
+											Notificaciones
+											</label>
+										</div>
+									</li>									
+									
+								</ul>
+
+								
+							</td>
+							
+							<td>
+								<ul class="list-group">
+									<li class="list-group-item">
+										<span>Inicio: </span><span class="begindate">{{
+													if contract.contractedproducts.start==None:
+														='--'
+													else:
+														=contract.contractedproducts.start.strftime("%d-%m-%Y %H:%M")
+													pass
+												}}</span>
+									</li>
+									<li class="list-group-item">
+											<span>{{="Renovación:"}}<span>
+											<span class="renovedate">{{	
+												if contract.contractedproducts.renove==None:
+													='--'
+												else:
+													=contract.contractedproducts.renove.strftime("%d-%m-%Y %H:%M")
+												pass
+											}}
+											</span>
+									</li>
+									<li class="list-group-item">
+										<span>Caducidad: </span>
+										<span class="expiredate">{{
+											if contract.contractedproducts.expiration==None:
+												='--'
+											else:
+												=contract.contractedproducts.expiration.strftime("%d-%m-%Y %H:%M")
+											pass
+										}}</span>
+									</li>
+								</ul>
+								<ul class="list-group" id="newexpiration">
+								</ul>
+							</td>
+							<td>{{=contract.orders.payment_method}}</td>
+							
+
+							
+						</tr>
+
+					{{pass}}
+				</tbody>
+			</table>
+			<button class="btn btn-grove-one" id="generate" onClick="generate()">Generar</button>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	//var global
+	var shopid;
+
+
+	{{if shopid:}}
+		jQuery(document).ready(function(){
+			jQuery('span#productdropdown').html(jQuery("a[host='{{=shopid}}']").html());
+			shopid={{=shopid}};
+		});
+	{{pass}}
+
+	jQuery('input.checkcontract').on('click', function(){
+		var tr=jQuery(this).parent('div').parent('td').parent('tr');
+		// cosas a hacer en los datos de la fila
+		if (jQuery(this).is(':checked')==true) {
+			
+			tr.addClass('success');
+			
+		} else {
+			tr.removeClass('success');
+		}
+
+	});
+
+	jQuery('a.selecthost').click(function() {
+		jQuery('span#productdropdown').html(jQuery(this).html());
+		shopid=jQuery(this).attr('host');
+	});
+
+
+
+	function generate(){
+
+		var datacontract=[]
+
+		jQuery('table#contractstable tbody tr').each(function(){
+			datacontract.push({	
+					"orderlist":jQuery(this).attr('orderlist'),
+					"automatics_action":jQuery(this).find('input.automatics_action').is(':checked'),
+					"credit_annotation":jQuery(this).find('input.credit_annotation').is(':checked'),
+					"notifications":jQuery(this).find('input.notifications').is(':checked'),
+					"autorenove":jQuery(this).find('input.autorenove').is(':checked'),
+				});
+		});
+		
+
+		jQuery.ajax({
+			type: "POST",
+			cache: false,
+			data: {"datacontracts":JSON.stringify(datacontract),
+					"shopid":shopid,
+					"invoice":"{{=request.vars.invoice}}"},
+			dataType: "text",
+			url:'{{=URL(r=request,c="contracts", f="postcontracts")}}',
+			success: function(data) {
+
+				window.location="{{=URL(request.application, 'administrator', 'editcustomer', args=[session.usercontract])}}"
+			},
+			error: function(obj,msg,thr) {
+				
+				jQuery('.flash').html('Ocurrió un error: '+ msg).slideDown();
+			}
+		});
+
+	}
+
+</script>

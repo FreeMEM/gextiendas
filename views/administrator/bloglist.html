@@ -1,0 +1,159 @@
+{{extend 'layout_grove.html'}}
+
+
+<div class='container content fill'>
+
+	<div class="fill">
+		<div class="pull pull-right" style="margin-bottom:8px">
+			<a href="{{=URL(request.application, 'blog','new')}}" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> {{="Nueva publicación"}}</a>
+			{{if records>=items_per_page:}}
+				{{=pagination}}	
+			{{pass}}
+		</div>
+		<div class="clearfix"></div>
+		{{if records>0:}}
+			<table class="table table-hover table-striped content" style="font-size:12px">
+				<thead>
+					<tr>
+						<th>{{="Título"}}</th>
+						<th align="right" style="text-align:right">{{="Publicado"}}</th>
+						<th></th>
+						<th></th>
+						<th>{{="Fecha creación"}}</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{for draft in drafts:}}
+					<tr id="{{=draft.id}}" class="warning" draft="true">
+						<td width="60%">{{=draft.title}}</td>
+						<td width="10%" align="right" style="text-align:right"><small> borrador </small></td>
+						<td width="5%" style="text-align:right"><a href="{{=URL('blog','edit', vars=dict(draft=draft.id, blog=None))}}" ><i class="glyphicon glyphicon-pencil"></i></td>
+						<td width="5%" style="text-align:left"><a href="#modalremove"  data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a></td>
+						<td width="15%">{{=draft.created_on}}</td>
+					</tr>
+				{{pass}}				
+				{{for post in posts:}}
+					<tr id="{{=post.id}}" draft="false">
+						<td width="60%"><a href="{{=URL('blog','show/%s'%post.id)}}">{{=post.title}}</a></td>
+						<td width="10%" align="right" style="text-align:right">{{=INPUT(_type='checkbox', value=post.public)}}</td>
+						<td width="5%" style="text-align:right"><a href="{{=URL('blog','edit', vars=dict(draft=None, blog=post.id))}}" ><i class="glyphicon glyphicon-pencil"></i></td>
+						<td width="5%" style="text-align:left"><a href="#modalremove"  data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a></td>
+						<td width="15%">{{=post.created_on}}</td>
+					</tr>
+				{{pass}}
+				</tbody>
+			</table>
+			{{if records>=items_per_page:}}
+				<div class="pull pull-right">
+					{{=pagination}}	
+				</div>
+			{{pass}}
+		{{else:}}
+			<div class="" style="min-height:400px">
+				<div class="alert alert-info">No hay entradas de blog</div>
+			</div>
+		{{pass}}
+	</div>
+
+</div>
+<div id="modalremove" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+		  
+		  <div class="modal-header">
+		    <button class="close" data-dismiss="modal">×</button>
+		    <h3>Confirmación de borrado</h3>
+		  </div>
+		  <div class="modal-body">
+		    <p>El borrado será permanente, ¿está seguro de querer eliminar la publicación?</p>
+		  </div>
+		  <div class="modal-footer">
+		    <button class="btn btn-inverse" data-dismiss="modal">Cancelar</button>
+		    <button class="btn btn-primary" id="remove">Borrar</button>
+		  </div>
+		 </div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var url="";
+	jQuery('input[type="checkbox"]').click(function(){
+		var input=jQuery(this);
+		
+		var id=input.parent('td').parent('tr').attr('id');
+		if (input.is(':checked')) {
+			$.ajax({
+	            beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+	            type: "POST",
+	            cache: false,
+	            data: {'id':id, 'public': true },
+	            dataType: 'text',
+	            url:'{{=URL(r=request,c='blog', f='setpublic')}}',
+	            success: function(data) {
+	            	if(data=="true") {
+	                	jQuery('.flash').html('Publicado').slideDown('slow', function(){jQuery(this).delay(2000).slideUp()});
+	                	input.attr('checked', true);
+	                }
+	            },
+	            error: function(obj,msg,thr) {input.attr('checked', false);}
+	        });
+		} else {
+			$.ajax({
+	            beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+	            type: "POST",
+	            cache: false,
+	            data: {'id':id, 'public': false },
+	            dataType: 'text',
+	            url:'{{=URL(r=request,c='blog', f='setpublic')}}',
+	            success: function(data) {
+	            	if(data=="true") {
+	                	jQuery('.flash').html('Publicación retirada').slideDown('slow', function(){jQuery(this).delay(2000).slideUp()});
+	                	input.attr('checked', false);
+	                }
+	            },
+	            error: function(obj,msg,thr) {input.attr('checked', false);}
+	        });
+		}
+
+	});
+
+
+
+ 	jQuery('i.glyphicon-remove').click(function(){
+ 		
+ 		if (jQuery(this).parent('a').parent('td').parent('tr').attr('draft')=="true") {
+ 			url="{{=URL('blog','deletedraft')}}/"+jQuery(this).parent('a').parent('td').parent('tr').attr('id')
+ 		}else {
+ 			url="{{=URL('blog','delete')}}/"+jQuery(this).parent('a').parent('td').parent('tr').attr('id');
+ 		}
+ 		
+  	});
+
+  	jQuery('button#remove').click(function(){
+  		console.log("eooooo ----" + url);
+		jQuery.ajax({
+			beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+			type: "POST",
+			cache: false,
+			dataType: 'text',
+			url: url,
+			success: function(result) {
+				if (result=="OK") {
+					jQuery('div#modalremove').modal('hide');
+					window.location = "{{=URL('administrator','bloglist')}}";
+				} else {
+					jQuery('div#modalremove').modal('hide');	
+					jQuery('.flash').html('Ocurrió un error y no se pudo borrar el post').slideDown('slow', function(){jQuery(this).delay(2000).slideUp()});
+				}
+			},
+			error: function(obj,msg,thr) {
+				alert("error obj:  "+obj+" error msg:  "+msg+" thr:  "+thr);
+			}
+		});
+  	});
+
+
+
+
+
+</script>

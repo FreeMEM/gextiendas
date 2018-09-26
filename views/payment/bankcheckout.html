@@ -1,0 +1,31 @@
+{{extend 'layout_grove.html'}}
+<div class="container content">
+
+	<div class="jumbotron">
+		{{if redirect==False:}}
+			<h1>{{="Confirmación de pedido"}}</h1>
+			<p>Hemos recibido tu pedido. Una vez realizada la transferencia, en un plazo máximo de 72 horas nos llegará la confirmación bancaria y procederemos a activar el servicio</p>
+			
+			<p>Por favor, <strong>indique como concepto</strong> de su transferencia la siguiente referencia: <strong>{{=ref}}</strong>
+			<p>Sin este dato, no podremos indentificar su pago</p>
+			<dl>
+				<dt>Entidad bancaria</dt>
+				<dd>{{=bank}}</dd>
+				<dt>Beneficiario</dt>
+				<dd>{{=beneficiary}}</dd>
+				<dt>{{="Número de cuenta"}}</dt>
+				<dd>{{=bank_account}}</dd>
+				<dt>Concepto</dt>
+				<dd>{{=ref}}</dd>
+				<dt>Total a transferir</dt>
+				<dd>{{="%s €" %total}}</dd>
+			</dl>
+		{{else:}}
+		<h1>No hay pedidos pendientes</h1>
+		<p>En este momento no hay ningún pedido pendiente</p>
+		{{pass}}
+		<p><a class="btn btn-primary btn-lg" role="button" href="{{=URL(request.application, 'account','index')}}">Volver a Mi cuenta</a></p>
+	</div>
+</div>
+
+

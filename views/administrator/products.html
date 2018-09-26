@@ -1,0 +1,75 @@
+{{extend 'layout_grove.html'}}
+<div class="container">
+	<div style="margin-top:5px;">
+		{{=MENU(response.menu_products, _class='nav nav-tabs',li_active="active")}}
+	<div>
+	<div style="min-height:400px;">
+		{{if records>0:}}
+			{{if records>=items_per_page:}}
+				<div class="pull pull-right">
+					{{=pagination}}
+				</div>
+			{{pass}}
+			<div style="margin:5px 0px 0px 0px">
+				<div class="pull pull-left">
+					{{="Número de productos: %s" % records}}
+				</div>
+				<div class="pull pull-right">
+					<a type="button" class="btn btn-default" href="{{=URL('administrator','newproduct')}}"><i class="glyphicon glyphicon-plus"></i> nuevo producto</a>
+				</div>
+			</div>
+			<table class="table table-hover table-striped content" style="font-size:12px; margin-top:5px;">
+				<thead>
+					<tr>
+						<th>{{="Nombre"}}</th>
+						<th>{{="Descripción"}}</th>
+						<th>{{="precio"}}</th>
+						<th>{{="Activo"}}</th>
+						<th>{{="suscribible"}}</th>
+						<th>{{="periodo"}}</th>
+						<th>{{="Plan"}}</th>
+						<th>{{="Builtin"}}</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{
+					period={'month':'mensual','hours':'hora','days':'diariamente','week':'semanal','year':'anual',None:''}
+				}}
+				
+				{{for product in products:}}
+						
+					<tr id="{{=product.products.id}}" style="cursor:pointer;">
+						<td width="25%">{{=product.products.name}}</td>
+						<td width="37%">{{=product.products.description}}</td>
+						<td width="5%" style="text-align:right;">{{="%.2f" % product.products.price}}</td>
+						<td width="5%" align="center">{{=(XML("<i class='glyphicon glyphicon-remove'></i>"), XML("<i class='glyphicon glyphicon-ok'></i>"))[product.products.active==True]}}</td>
+						<td width="5%" align="center">{{=(XML("<i class='glyphicon glyphicon-remove'></i>"), XML("<i class='glyphicon glyphicon-ok'></i>"))[product.products.suscription==True]}}</td>
+						<td width="5%">{{=('',period[product.products.min_period])[product.products.min_period!=None]}}</td>
+						<td width="12%">{{=('',product.priceplans.planname)[product.priceplans.planname!=None]}}</td>
+						<td width="5%" align="center">{{=(XML("<i class='glyphicon glyphicon-remove'></i>"), XML("<i class='glyphicon glyphicon-ok'></i>"))[product.products.builtin==True]}}</td>
+					</tr>
+				{{pass}}
+				</tbody>
+			</table>
+			{{if records>=items_per_page:}}
+				<div class="pull pull-right">
+					{{=pagination}}	
+				</div>
+			{{pass}}
+		{{else:}}
+		
+			<div class="alert alert-info">
+				{{="No hay productos"}} 
+			</div>
+		
+		{{pass}}
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+	jQuery('tr').on('click', function(){
+		window.location="{{=URL(request.application,'administrator','editproduct')}}"+"/?productid="+jQuery(this).attr('id');	
+	});
+	
+</script>

@@ -1,0 +1,46 @@
+{{extend 'layout_grove.html'}}
+
+
+<div class="container content">
+	<div class="row">
+		<div class="col-md-8" style="font-size">
+			{{=form}}
+		</div>
+		<div class="col-md-4 border-left-row">
+			
+		</div>
+</div>
+
+<script type="text/javascript">
+	jQuery('div#_autocomplete_cities_poblacion_div').css({'z-index':'100'});
+	jQuery('div#_autocomplete_province_provincia_div').css({'z-index':'100'});
+
+	
+    jQuery("form").bind("keypress", function(e) {
+            if (e.keyCode == 13) return false;
+      });
+
+
+    jQuery(document).ready(function(){
+    	help=jQuery('span.glyphicon-question-sign');
+	    help.popover({placement:'bottom',                  
+	                  content:'Número de Identificación Fiscal / Código Único de Identificación Tributaria'
+	                });
+
+
+	    help.hover(
+	            function(){
+	                jQuery(this).popover('show');
+	            }, function() {
+	                jQuery(this).popover('hide');               
+	            }
+	        );
+	    help.click(function(){
+	            jQuery(this).popover('hide');
+	        }); 
+    });
+
+
+
+
+</script>

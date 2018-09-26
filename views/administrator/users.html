@@ -1,0 +1,128 @@
+{{extend 'layout_grove.html'}}
+
+
+<div class='container content'>
+<div style="margin:5px 0px 0px 0px">
+	<div class="pull pull-left">
+		{{="Número de clientes: %s" % db(db.auth_user.id>0).count()}}
+	</div>
+	<div class="pull pull-right">
+		<a type="button" class="btn btn-default" href="{{=URL('administrator','newcustomer')}}"><i class="glyphicon glyphicon-plus"></i> nuevo cliente</a>
+	</div>
+</div>
+	<div style="min-height:400px;">
+		<table class="table table-hover table-striped content">
+			<thead class="head">
+				<th>{{="Id"}}</th>
+				<th></th>
+				<th>{{="Nombre"}}</th>
+				<th>{{="Email"}}</th>
+				<th>{{="Grupo"}}</th>
+				<th></th>
+			</thead>
+			<tbody>
+				{{for user in users:}}
+				{{if user.id != auth.user.id:}}
+				<tr>
+				{{else:}}
+				<tr class="info">
+				{{pass}}
+					<td id="tdid" width="5%">
+						{{=user.id}}
+					</td>
+					<td class="edit" user="{{=user.id}}" width="5%"></td>
+					<td width="30%">
+						{{=user.first_name}} {{=user.last_name}}
+					</td>
+					<td width="30%">
+						{{=user.email}}
+					</td>
+					<td width="15%">
+						{{roles=db(db.auth_group).select(db.auth_group.id, db.auth_group.role)}}
+						{{data=dict()}}
+						{{for role in roles:}}
+						{{data[role.id]=role.role}}
+						{{pass}}
+						{{group=db(db.auth_membership.user_id==user.id).select(db.auth_membership.group_id).first()}}
+
+						{{if group!=None:}}
+							{{if user.id != auth.user.id:}}
+	            				{{=SELECT(*[OPTION(v,_value=k) for (k,v) in data.items()], _name="membership",  value=group.group_id)}}
+	            			{{else:}}
+	            				<span class="badge">{{=data[group.group_id]}}</span>
+	            			{{pass}}
+	            		{{else:}}
+	            			<span class="badge badge-warning">sin verificar</span>
+            			{{pass}}
+					</td>
+					<td width="10%" id="tdbutton">
+						{{if user.id != auth.user.id:}}
+							{{if group!=None:}}
+								<button id="{{=user.id}}" group="{{=group.group_id}}" class="btn disabled btn-primary" > modificar </button>
+							{{pass}}
+						{{pass}}
+					</td>
+				</tr>
+				{{pass}}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+	var tr= jQuery("tr");
+		
+
+	
+
+	tr.hover(
+			function () {
+				var e=jQuery(this);
+				
+				var a=e.children('td.edit').append("<i class='glyphicon glyphicon-pencil'></i>");
+				a.unbind();
+				a.click(function(){
+					window.location="{{=URL('administrator','editcustomer')}}/"+a.attr('user');
+				});
+			},
+			function () {
+				jQuery(this).find("i:last").remove();
+			}
+		);
+
+
+
+
+	 jQuery('select[name*="membership"]').change(function() {
+	 	var tr=jQuery(this).parent('td').parent(tr);
+	 	var group_id=jQuery(this).val()
+	 	var id =  parseInt(tr.children('td#tdid').html());
+	 	var bton=tr.children('td#tdbutton').children('button');
+	 	bton.removeClass('disabled');
+	 	bton.click(function() {
+	 		console.log("grupo: " +group_id + " id: "+id);
+	 		jQuery.ajax({
+			beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+	            type: "POST",
+	            cache: false,
+	            data: {'user_id':id, 'group_id':group_id},
+	            dataType: 'text',
+	            url:'{{=URL(r=request,c='administrator', f='setgroupid')}}',
+	            success: function(data) {
+	            	if(data=="true") {
+	            		
+	                	jQuery('.flash').html('Grupo de permisos modificado').slideDown('slow', function(){jQuery(this).delay(2000).slideUp()});
+	                	bton.addClass('disabled');
+	        
+	                } else {
+	                	jQuery('.flash').html('No se pudo modificar el grupo').slideDown('slow', function(){jQuery(this).delay(2000).slideUp()});
+
+	                }
+	            },
+	            error: function(obj,msg,thr) {input.attr('checked', false);}
+	        });
+	 		
+	 	});
+	 });
+</script>

@@ -1,0 +1,123 @@
+{{extend 'layout_grove.html'}}
+{{from invoices import Fiscal}}
+{{Fiscal(db)}}
+<div class='container content'>
+
+	<div style="min-height:400px;">
+		{{if records>0:}}
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					{{if records>=items_per_page:}}
+						<div class="pull pull-right">
+							{{=pagination}}
+						</div>
+					{{pass}}
+					<div class="pull pull-left">
+						{{="Número de pedidos: %s" % records}}
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<table class="table table-hover table-striped content" style="font-size:12px">
+						<thead>
+							<tr>
+								<th>{{="Nombre/Empresa"}}</th>
+								<th>{{="Host/tienda"}}</th>
+								<th>{{="Factura"}}</th>
+								<th>{{="Importe"}}</th>
+								<th>{{="IVA"}}</th>
+								<th>{{="Total"}}</th>
+								<th>{{="Pedido"}}</th>
+								<th>{{="Confirmado"}}</th>
+								<th>{{="Referencia"}}</th>
+								<th>{{="Estado"}}</th>
+								<th>{{="Método de pago"}}</th>
+								<th>{{="Acción"}}</th>
+							</tr>
+						</thead>
+						<tbody>
+						{{for order in orders:}}
+							{{	
+								pending=""
+								if order.orders.status=="Pendiente pago":
+									pending="danger"
+								pass
+							}}
+							{{	
+								invoicenumber=""
+								if order.orders.invoice!=None:
+									invoicenumber=order.orders.invoice.invoice_number
+								pass
+								confirmed=""
+								if order.orders.confirmed_at!=None:
+									confirmed=order.orders.confirmed_at.strftime("%d/%m/%Y %H:%M")
+								pass
+							}}
+							<tr id="{{=order.orders.id}}"  style="cursor:pointer;" class="{{=pending}}">
+								<td width="25%">
+									<div>{{=order.orders.user.first_name}} {{=order.orders.user.last_name}}</div>
+									{{fiscal=db(db.fiscals.user==order.orders.user).select().first()
+										if fiscal:
+											=XML("<div>%s</div>"%fiscal.fiscalname)
+										pass
+									}}
+								</td>
+								<td width="25%">
+									{{=order.shop.host}}
+								</td>
+								<td width="5%">{{=invoicenumber}}</td>
+								<td width="5%">{{=order.orders.total}}{{="€"}}</td>
+								<td width="5%">{{=order.orders.totaltax}}{{="€"}}</td>
+								<td width="5%">{{="%.2f€"% (float(order.orders.total) + float(order.orders.totaltax))}}</a></td>
+								<td width="5%">{{=order.orders.ordered_at.strftime("%d/%m/%Y %H:%M")}}</td>
+								<td width="5%">{{=confirmed}}</td>
+								{{if order.orders.payment_code:}}
+									<td width="5%">{{=order.orders.payment_code.code}}</td>
+								{{else:}}
+									<td width="5%"></td>
+								{{pass}}
+								<td width="5%">{{=order.orders.status}}</td>
+								<td width="1%">{{=order.orders.payment_method}}</td>
+								<td>{{if not order.orders.confirmed_at:}}
+										{{if not order.orders.manual_operation:}}
+											{{url=URL("administrator", "order_approving", vars=dict(order=order.orders.id))}}
+
+											{{=XML("<a class='btn btn-warning' href='%s'>aprobar</a>" % url)}}
+										{{else:}}
+											{{=XML('<span class="label label-info">manual</span>')}}
+										{{pass}}
+									{{pass}}
+								</td>
+							</tr>
+						{{pass}}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{{if records>=items_per_page:}}
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<div class="pull pull-right">
+						{{=pagination}}	
+					</div>
+				</div>
+			</div>
+			{{pass}}
+		{{else:}}
+		
+			<div class="alert alert-info">
+				{{="No hay pedidos"}} 
+			</div>
+		
+		{{pass}}
+	</div>
+</div>
+
+<script type="text/javascript">
+
+    jQuery('table tbody tr').on('click', function(){
+		window.location="{{=URL('orders','vieworder')}}/"+jQuery(this).attr('id');
+	});
+
+</script>

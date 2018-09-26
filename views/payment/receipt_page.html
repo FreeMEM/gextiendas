@@ -1,0 +1,13 @@
+{{extend 'layout_grove.html'}}
+<div class="container content">
+	<div class="hero-unit">
+		<dl class="dl-horizontal">
+			<dt>Estado del pago</dt><dd><span class="badge badge-info"> {{=output['payment_status']}}</success></dd>
+			<dt>Identificador trans.</dt><dd>{{=output['txn_id']}}</dd>
+			<dt>Cantidad:</dt><dd>{{=output['mc_gross']}} €</dd>
+			<dt>Concepto:</dt><dd>TVL00{{=output['transaction_subject']}}</dd>
+		</dl>
+		{{=request.vars}}
+		{{=request.args}}
+	</div>
+</div>

@@ -1,0 +1,73 @@
+{{extend 'layout_grove.html'}}
+
+<div class="container content">
+	<h1>No existe host/tienda asociado al cliente. Procedimiento de creación.</h1>
+	<div class="container">
+	    <div class="row">
+
+	        <section id="contact-form" class="col-md-8">
+	            {{=form.custom.begin}}
+	            {{  
+	                form.element('input',_name='first_name')['_class']="form-control input-lg"
+	                form.element('input',_name='last_name')['_class']="form-control input-lg"
+	                form.element('input',_name='name')['_class']="form-control input-lg"
+	                form.element('input',_name='host')['_class']="form-control input-lg"
+	                form.element('input',_type='submit')['_class']="btn btn-grove-one btn-lg btn-bold pull-right"
+	            }}
+	            
+	            	<div class="row">
+						<div class="col-sm-12 form-group">
+						    <label for="name">{{="Nombre/título de la web/tienda"}}</label>
+						    {{=form.custom.widget.name}}
+						</div>
+	                </div>
+
+	                <div class="row">
+	                    
+	                        <div class="col-sm-4 form-group">
+	                            <label for="host">Nombre corto de la tienda</label>                    
+	                            {{=form.custom.widget.host}}
+	                        </div>
+	                        <div class="col-sm-8 form-group" style="padding-left:0">
+	                            <label></label>                    
+	                            <p class="input-lg" style="padding-left:0">.gextiendas.es</p>
+	                        </div>
+	                    
+	                </div>
+	                <div class="row">
+						<div class="col-sm-12 form-group">
+						    <label for="first_name">Nombre del administrador de la tienda</label>
+						    {{=form.custom.widget.first_name}}
+						</div>
+	                </div>
+
+	                <div class="row">
+	                    <div class="col-sm-12 form-group">
+	                        <label for="last_name">Apellidos del administrador de la tienda</label>
+	                        {{=form.custom.widget.last_name}}
+	                    </div>
+	                </div>             
+	            	{{=form.custom.submit}}
+
+	            {{=form.custom.end}}	
+
+	        </section>
+
+	        <section id="contact-details" class="col-md-4">
+	            <div class="detail-block">
+	                <h3>¿Qué va a ocurrir?</h3>
+	                <p>
+	                    {{="Se va a generar una instancia web balanceada en varios servidores con un host de dominio gextiendas.es"}}
+	                </p>
+	            </div>
+	        </section>
+
+	    </div>
+	</div>
+</div>
+
+{{	
+	if db(db.shop.user==request.args(0)).count()>0:
+		redirect(URL(request.application,'contracts','createcontracts', args=request.args(0), vars=dict(invoice=request.vars.invoice, order=request.vars.order)))
+	pass
+}}

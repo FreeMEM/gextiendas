@@ -1,0 +1,96 @@
+{{extend 'layout_grove.html'}}
+
+<div class="widewrapper pagetitle">
+	<div class="container">
+		<h1>{{="Edición de nueva publicación"}}{{if draft:}} <small>borrador</small>{{pass}}</h1>
+	</div>
+</div>
+
+<div class="widewrapper ">
+    <div class="container content">
+
+		{{=form.custom.begin}}
+			{{=T('Title')}}: 
+			<div class="row">
+				<div class="col-xs-9">
+				{{=form.custom.widget.title}}
+				</div>
+				{{if auth.has_membership('administradores') or auth.has_membership('superadministradores'):}}
+					<div class="col-xs-3">
+						<div class="btn-group">
+						<a href="{{=URL('blog','new')}}" class="btn btn-primary" type="button" role="button"><span class="glyphicon glyphicon-plus"></span> {{="Nueva publicación"}}</a>
+						<a href="{{=URL('administrator','bloglist')}}" class="btn btn-default" role="button"><span class="glyphicon glyphicon-list"></span> lista</a>
+						</div>
+					</div>
+				{{pass}}
+				
+			</div>
+			{{=T('Subtitle')}}:
+			<div class="row">
+				<div class="col-xs-12">{{=form.custom.widget.subtitle}}</div>
+			</div>
+			{{="Encabezado de imágen"}}:
+			<div class="row">
+				{{if form.custom.widget.image==None:}}
+					{{if images!=None:}}
+						<div class="col-xs-12"><img width="750px" src="{{=URL(request.application, 'blog', 'download',args=images.image)}}" /></div>
+					{{pass}}
+				{{else:}}
+					{{=form.custom.widget.image}}<div class="col-xs-12">{{=form.custom.widget.image}} Por favor 750x500px. Lo que se suba se reescalará a 3 imágenes con anchos 750px, 470px y 263px</div>
+				{{pass}}
+			</div>
+			{{=T('Tags')}}:
+			<div class="row">
+				<div class="col-xs-4">{{=form.custom.widget.tags}}</div>
+			</div>
+			{{=T('Post')}}:
+			<div class="row">
+				<div class="col-xs-12">{{=form.custom.widget.post}}</div>
+			</div>
+			</br>
+
+		{{=form.custom.end}}
+
+		<div style="margin-top:-20px">
+				{{=form.custom.submit}}
+				<button id="postpreview" class="btn" onClick="postpreview();">Vista previa</button>
+				{{if draft:}}
+					<button id="publish" class="btn btn-inverse" onClick="publish();">Publicar</button>
+				{{pass}}
+			</div>	
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	
+	jQuery('input[type="submit"]').click(function(){
+			jQuery('form').submit();
+		});
+
+
+	function postpreview() {
+		jQuery.get('{{=URL(request.application,'blog','preview')}}', function(data) {
+			if (data=="OK") jQuery('form').submit();
+		});
+
+	}
+	function publish() {
+		jQuery.get('{{=URL(request.application,'blog','publishing')}}', function(data) {
+			if (data=="OK") jQuery('form').submit();
+		});
+
+	}
+
+
+
+
+
+
+	// CKEDITOR.on('instanceCreated', function (e) {
+ //    	e.editor.on('change', function (ev) {
+ //        	// document.getElementById( ev.editor.name + '_preview').innerHTML = ev.editor.getData();
+ //        	// jQuery('a#postpreview').removeClass('disabled');
+ //    	});
+	// });
+</script>

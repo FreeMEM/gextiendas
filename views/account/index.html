@@ -1,0 +1,63 @@
+{{extend 'layout_grove.html'}}
+
+<div class="container content">
+    
+
+	{{if not shops:}}
+		{{include 'account/noshops.html'}}
+
+    {{else:}}
+        {{include 'account/shops.html'}}
+	{{pass}}
+    
+    
+</div>
+
+{{if shops:}}
+<div class="widewrapper strong-highlight">
+	<div class="container">
+	    <div class="showroom-item col-sm-3">
+	        <div class="image">
+	        	<h3 ><i class="glyphicons stats"><i></i></i>{{=" Campañas Difusión"}}</h3>
+	            <p> {{="¿Quieres conseguir más clientes? Te podemos ayudar con nuestros servicios de Social Media. Escribimos por tí tus campañas en Facebook, Twitter, Google+ o en Blogs"}}</p>
+	            <a class="overlay" href="#" style="margin:-10px">
+	                 <i class="glyphicons shopping_cart"><i></i></i>
+	                 <div class="name">Diseña tu campaña</div>
+	            </a>
+	        </div>
+	    </div>
+	    <div class="showroom-item col-sm-3">
+	        <div class="image">
+	          	<h3><i class="glyphicons podium"><i></i></i>{{=" SEM/SEO"}}</h3>
+	        	<p> {{="Más público, más clientes potenciales. Consíguelo aumentando las posibilidades de que aparezcas en las búsquedas de los principales buscadores. En Gextiendas sabemos como hacerlo."}}</p>  
+	            <a class="overlay" href="#" style="margin:-10px">
+	                 <i class="glyphicons shopping_cart"><i></i></i>
+	                 <div class="name">Diseña tu campaña</div>
+	            </a>
+	        </div>
+	    </div>
+
+	    <div class="showroom-item col-sm-3">
+	        <div class="image">
+	          	<h3><i class="glyphicons keys"><i></i></i>{{=" Pack de iniciación"}}</h3>
+	        	<p> {{="¿Quieres que un profesional de gextiendas ponga en marcha tu tienda? contrata nuestro plan de iniciación. Dejaremos tu tienda lista sólo para vender"}}</p>  
+	            <a class="overlay" href="#" style="margin:-10px">
+	                 <i class="glyphicons shopping_cart"><i></i></i>
+	                 <div class="name">Déjanos a nosotros los detalles. Tú solo vende.</div>
+	            </a>
+	        </div>
+	    </div>
+	    <div class="showroom-item col-sm-3">
+	        <div class="image">
+	          	<h3><i class="glyphicons bank"><i></i></i>{{=" LOPD/LSSICE"}}</h3>
+	        	<p> {{=XML("Transmite confianza a tus clientes y cumple con <strong>LOPD</strong> y <strong>LSSI-CE</strong>. Adecuamos tu tienda, desarrollamos la documentación y la registramos en la Agencia Española de Protección de Datos. Y te <strong>regalamos un año</strong> de <strong>consultoría.</strong>")}}</p>  
+	            <a class="overlay" href="#" style="margin:-10px">
+	                 <i class="glyphicons shopping_cart"><i></i></i>
+	                 <div class="name">Contrátalo a precio de lowcost</div>
+	            </a>
+	        </div>
+	    </div>
+	</div>
+</div>
+{{pass}}
+

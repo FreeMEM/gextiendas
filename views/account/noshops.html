@@ -1,0 +1,74 @@
+<h1>Sólo necesitaremos estos datos para crear tu primera tienda, del resto nos encargamos nosotros</h1>
+<div class="container">
+    <div class="row">
+        <section id="contact-form" class="col-md-8">
+            {{=form.custom.begin}}
+            {{  
+                form.element('input',_name='first_name')['_class']="form-control input-lg"
+                form.element('input',_name='last_name')['_class']="form-control input-lg"
+                form.element('input',_name='name')['_class']="form-control input-lg"
+                form.element('input',_name='host')['_class']="form-control input-lg"
+                form.element('input',_type='submit')['_class']="btn btn-grove-one btn-lg btn-bold pull-right"
+            }}
+            
+            	<div class="row">
+					<div class="col-sm-12 form-group">
+					    <label for="name">Nombre de la tienda</label>
+					    {{=form.custom.widget.name}}
+					</div>
+                </div>
+
+                <div class="row">
+                    
+                        <div class="col-sm-4 form-group">
+                            <label for="host">Nombre corto de la tienda</label>                    
+                            {{=form.custom.widget.host}}
+                        </div>
+                        <div class="col-sm-8 form-group" style="padding-left:0">
+                            <label></label>                    
+                            <p class="input-lg" style="padding-left:0">.gextiendas.es</p>
+                        </div>
+                    
+                </div>
+                <div class="row">
+					<div class="col-sm-12 form-group">
+					    <label for="first_name">Tu nombre</label>
+					    {{=form.custom.widget.first_name}}
+					</div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <label for="last_name">Apellidos</label>
+                        {{=form.custom.widget.last_name}}
+                    </div>
+                </div>             
+            	{{=form.custom.submit}}
+
+            {{=form.custom.end}}	
+
+        </section>
+
+        <section id="contact-details" class="col-md-4">
+            <div class="detail-block">
+                <h3>¿Qué va a ocurrir?</h3>
+                <p>
+                    Vamos a generar una instancia nueva para tu tienda. La preconfiguraremos para tí en castellano y en euros. Pondremos artículos ficticios, impuestos y otra información de utilidad para que te sirva de guía en la personalización de tu negocio.
+                </p>
+            </div>
+            
+            <div class="detail-block">
+                <h3>Para más información</h3>
+                <div class="info-block">
+                    <i class="glyphicons e-mail"><i></i></i>
+                    <div class="info">
+                        <h5>Contacta con nosotros</h5>
+                        <p><a href="{{=URL('contactus','index')}}">En el panel de contacto</a></p>
+                    </div>                 
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+</div>

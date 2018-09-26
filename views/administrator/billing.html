@@ -1,0 +1,67 @@
+{{extend 'layout_grove.html'}}
+<div class='container content'>
+
+	<div style="min-height:400px;">
+		{{if records>0:}}
+			{{if records>=items_per_page:}}
+				<div class="pull pull-right">
+					{{=pagination}}
+				</div>
+			{{pass}}
+			<div class="pull pull-left">
+				<span>{{="Número de facturas:"}}</span> <span class="label label-default">{{=" %s " % records}}</span><span style="margin-left:5px">Ingresos: </span> <span class="label label-default">{{="%.2f € " % total}}</span> <span  style="margin-left:5px"> IVA: </span><span class="label label-default">{{="%.2f € " % totaltaxes}}</span><span style="margin-left:5px"> Facturado: </span><span class="label label-default"> {{="%.2f €" % (total+totaltaxes)}}</span>
+			</div>
+					<table class="table table-hover table-striped content" >
+						<thead>
+							<tr>
+								<th>{{="Factura"}}</th>
+								<th>{{="Fecha"}}</th>
+								<th>{{="Empresa/Nombre"}}</th>
+								<th style="text-align: right">{{="Subtotal"}}</th>
+								<th style="text-align: right">{{="Descuento"}}</th>
+								<th style="text-align: right">{{="IVA"}}</th>
+								<th style="text-align: right">{{="Total"}}</th>
+							</tr>
+						</thead>
+						<tbody>
+						{{for invoice in invoices:}}
+							{{	
+								pending=""
+								if invoice.orders.status=="Pendiente pago":
+									pending="danger"
+								pass
+							}}
+							<tr id="{{=invoice.invoices.id}}" class="invoicerow {{=pending}}" style="cursor:pointer;">
+								<td width="10%">{{=invoice.invoices.invoice_number}}</a></td>
+								<td width="10%">{{=invoice.invoices.created_at.strftime("%d-%m-%Y")}}</a></td>
+								<td width="40%">{{=("%s %s"%(invoice.auth_user.first_name, invoice.auth_user.last_name),invoice.fiscals.fiscalname)[invoice.fiscals.fiscalname!=None]}}</a></td>
+								<td width="10%" align="right">{{="%.2f €" % invoice.invoices.subtotal}}</a></td>
+								<td width="10%" align="right">{{="%.2f €" % invoice.invoices.discount}}</a></td>
+								<td width="10%" align="right">{{="%.2f €" % invoice.invoices.taxes}}</a></td>
+								<td width="10%" align="right">{{="%.2f €" % invoice.invoices.total}}</td>
+							</tr>
+						{{pass}}
+						</tbody>
+					</table>
+			{{if records>=items_per_page:}}
+				<div class="pull pull-right">
+					{{=pagination}}	
+				</div>
+			{{pass}}
+		{{else:}}
+		
+			<div class="alert alert-info">
+				{{="No hay facturas"}} 
+			</div>
+		
+		{{pass}}
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+	jQuery('tr.invoicerow').on('click', function(){
+		window.location="{{=URL('administrator','viewinvoice')}}/"+jQuery(this).attr('id');
+	});
+
+</script>

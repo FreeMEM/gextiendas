@@ -1,0 +1,463 @@
+{{extend 'layout_grove.html'}}
+
+
+<div class="container content">
+	<div class="row">
+		<div class="col-md-5" >
+			{{=form}}
+			<div class="row">
+				<div class="col-md-12">
+					<h2>Pedidos pendientes de facturar
+						<div class="btn-group pull pull-right" >
+							<a class="btn btn-primary btn-sm" href="{{=URL(request.application, 'orders', 'neworder', args=userid)}}" role="button">Crear pedido</a>
+						</div>
+					</h2>
+					{{if orders:}}
+						<table class="table table-hover table-striped content torders" style="font-size:11px">
+							<thead>
+								<tr>
+									<th>Pedido</th>
+									<th>{{="Fecha"}}</th>
+									<th align="right">{{="Subtotal"}}</th>
+									<th align="right">{{="IVA"}}</th>
+									<th align="right">{{="Total"}}</th>
+								</tr>
+							</thead>
+							<tbody>
+							{{for order in orders:}}
+								<tr id="{{=order.id}}" style="cursor:pointer;">
+									<td width="5%">{{=order.id}}</td>
+									<td width="50%">{{=order.ordered_at.strftime("%d-%m-%Y")}}</td>
+									<td width="15%" align="right">{{="%.2f €" % order.total}}</td>
+
+									<td width="15%" align="right">{{="%.2f €" % order.totaltax}}</td>
+									<td width="15%" align="right">{{="%.2f €" % (float(order.total)+float(order.totaltax))}}</td>
+									
+								</tr>
+							{{pass}}
+							</tbody>
+						</table>
+					{{else:}}
+						<div class="alert alert-info">
+							{{="No hay pedidos pendientes de facturar"}} 
+						</div>
+					{{pass}}
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<h2>Presupuestos
+						<div class="btn-group pull pull-right" >
+							<a class="btn btn-primary btn-sm" href="{{=URL(request.application, 'budgets', 'newbudget', args=userid)}}" role="button">nuevo presupuesto</a>
+						</div>
+					</h2>
+					{{if budgets:}}
+						<table class="table table-hover table-striped content tbudgets" style="font-size:11px">
+							<thead>
+								<tr>
+									<th>{{="Presupuesto"}}</th>
+									<th></th>
+									<th>{{="Fecha"}}</th>
+									<th align="right">{{="Subtotal"}}</th>
+									<th align="right">{{="IVA"}}</th>
+									<th align="right">{{="Total"}}</th>
+								</tr>
+							</thead>
+							<tbody>
+							{{for budget in budgets:}}
+								<tr id="{{=budget.id}}" style="cursor:pointer;">
+									<td width="10%">{{=budget.id}}</td>
+									<td width="1%">
+										{{if budget.invoice:}}
+											<i class="glyphicon glyphicon-file"></i>
+										{{pass}}
+									</td>
+									<td width="45%">{{=budget.created_at.strftime("%d-%m-%Y")}}</td>
+									<td width="15%" align="right">
+										{{
+											if budget.total!=None:
+												="%.2f €" % budget.total
+											else:
+												="----"
+											pass
+										}}
+									</td>
+									<td width="15%" align="right">
+										{{
+											if budget.totaltax!=None:
+												="%.2f €" % budget.totaltax
+											else:
+												="----"
+											pass 
+										}}
+									</td>
+									<td width="15%" align="right">
+										{{ if (budget.total!=None) and (budget.totaltax!=None):
+												="%.2f €" % (float(budget.total)+float(budget.totaltax))
+											else:
+												="----"
+											pass
+										}}
+									</td>
+								</tr>
+							{{pass}}
+							</tbody>
+						</table>
+					{{else:}}
+						<div class="alert alert-info">
+							{{="No tiene presupuestos"}} 
+						</div>
+					{{pass}}
+				</div>
+			</div>
+		</div>
+		<div class="col-md-7 border-left-row">
+			<div class="row">
+				<div class="col-md-12">
+					<h2>Contratos</h2>
+					{{if contractedproducts:}}
+						<table class="table table-hover table-striped content" style="font-size:11px">
+							<thead>
+								<tr>
+									<th>{{="Tienda y Producto"}}</th>
+									<th align="right">{{="Cant."}}</th>
+									<th align="right">{{="Precio"}}</th>
+									<th>{{="Datos"}}</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+							{{for cp in contractedproducts:}}
+									{{
+										start=""
+										renove=""
+										expiration=""
+										if cp.contractedproducts.start:
+											start = cp.contractedproducts.start.strftime("%d/%m/%Y %H:%M")
+											pass
+										if cp.contractedproducts.renove:
+											renove = cp.contractedproducts.renove.strftime("%d/%m/%Y %H:%M")
+											pass
+										if cp.contractedproducts.expiration:
+											expiration = cp.contractedproducts.expiration.strftime("%d/%m/%Y %H:%M")
+											pass
+									}}
+									
+								<tr id="{{=cp.contractedproducts.id}}" style="cursor:pointer;">
+
+
+									<td width="30%"><div><strong>{{=cp.shop.host}}</strong></div><div>{{=cp.products.name}}</div></td>
+									<td width="5%" align="right">{{=cp.contractedproducts.quantity}}</td>
+									<td width="5%" align="right">{{="%.2f"% float(cp.products.price)*cp.contractedproducts.quantity}}{{="€"}}</td>
+									<td width="35%">{{=XML("<div><strong>periodo: </strong> %s </div>" % cp.contractedproducts.period)}}
+													<div><strong>autorenove: </strong> 
+														{{=(XML('<i class="glyphicon glyphicon-remove"></i>'),XML('<i class="glyphicon glyphicon-ok"></i>'))[cp.contractedproducts.autorenove]}}
+													</div>
+													{{=XML("<div><strong>inicio: </strong> %s </div>" % start)}}
+													{{=XML("<div><strong>renovación: </strong> %s </div>" % renove)}}
+
+													{{label="success"}}
+													{{	if cp.contractedproducts.expiration:
+
+															if cp.contractedproducts.expiration<=datetime.datetime.now():
+																label="danger"
+															elif cp.contractedproducts.expiration-datetime.timedelta(days=15) < datetime.datetime.now():
+																label="warning"
+															pass
+														pass
+													}}
+
+
+													{{=XML("<div><strong>caducidad: </strong> <span class='label label-%s' style='font-size:10px'>%s</span></div>" % (label,expiration))}}
+									</td>
+									<td width="35%">
+										<div>
+											<strong>pago: </strong>{{=("",cp.contractedproducts.paymentmethod)[cp.contractedproducts.paymentmethod!=None]}}
+										</div>
+										<div><strong>automatizaciones: </strong> 
+											{{=(XML('<i class="glyphicon glyphicon-remove"></i>'),XML('<i class="glyphicon glyphicon-ok"></i>'))[cp.contractedproducts.automatics_action]}}
+										</div>
+										<div><strong>Anotar crédito: </strong> 
+										{{=(XML('<i class="glyphicon glyphicon-remove"></i>'),XML('<i class="glyphicon glyphicon-ok"></i>'))[cp.contractedproducts.credit_annotation]}}
+
+										</div>
+										<div><strong>Notificaciones: </strong> 
+											{{=(XML('<i class="glyphicon glyphicon-remove"></i>'),XML('<i class="glyphicon glyphicon-ok"></i>'))[cp.contractedproducts.notifications]}}
+										</div>
+									</td>
+								</tr>
+							{{pass}}
+							</tbody>
+						</table>
+					{{else:}}
+						<div class="alert alert-info">
+							{{="No tiene contratos"}} 
+						</div>
+					{{pass}}
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+
+					<ul class="nav nav-tabs" role="tablist" id="invoicesandmovements">
+						<li class="active"><a href="#invoices" role="tab" data-toggle="tab">Facturas</a></li>
+						<li><a href="#accountingentries" role="tab" data-toggle="tab">Movimientos cuenta</a></li>
+					</ul>
+
+					<div class="tab-content">
+
+						<div class="tab-pane active" id="invoices">
+							<h2>Facturas
+								<div class="btn-group pull pull-right" >
+									<a class="btn btn-primary btn-sm" href="{{=URL(request.application, 'billing', 'newinvoice', args=userid)}}" role="button">nueva factura</a>
+								</div>
+							</h2>
+							{{if invoices:}}
+								<table class="table table-hover table-striped content tinvoices" style="font-size:11px">
+									<thead>
+										<tr>
+											<th>{{="Factura"}}</th>
+											<th>{{="Fecha"}}</th>
+											<th style="text-align:center;">Pagado</th>
+											
+											<th style="text-align:right;">{{="Subtotal"}}</th>
+											<th style="text-align:right;">{{="IVA"}}</th>
+											<th style="text-align:right;">{{="Total"}}</th>
+										</tr>
+									</thead>
+									<tbody>
+									{{for invoice in invoices:}}
+
+										{{	
+											color=""
+											if invoice.orders.status!="Pagado":
+												color="danger"
+											pass
+										}}
+										<tr id="{{=invoice.invoices.id}}" style="cursor:pointer;" class="{{=color}}">
+
+											<td width="10%">{{=invoice.invoices.invoice_number}}</td>
+											<td width="15%">{{=invoice.invoices.created_at.strftime("%d-%m-%Y")}}</td>
+											<td width="10%" align="center">{{=(XML('<i class="glyphicon glyphicon-remove"></i>'),XML('<i class="glyphicon glyphicon-ok"></i>'))[invoice.orders.status=="Pagado"]}}</td>
+											<td width="15%" align="right">{{="%.2f €" % invoice.invoices.subtotal}}</td>
+
+											<td width="15%" align="right">{{="%.2f €" % invoice.invoices.taxes}}</td>
+											<td width="15%" align="right">{{="%.2f €" % invoice.invoices.total}}</td>
+											
+										</tr>
+									{{pass}}
+									</tbody>
+								</table>
+							{{else:}}
+								<div class="alert alert-info">
+									{{="No tiene facturas"}} 
+								</div>
+							{{pass}}
+						</div>
+						<div class="tab-pane" id="accountingentries">
+							<h2>{{="Movimientos cuenta crédito"}} 
+								<div class="pull pull-right">
+								<small>	Saldo:
+									{{if creditaccount:}}
+										{{=creditaccount.balance}}{{="€"}}
+									{{else:}}
+										{{="0.00€"}}
+									{{pass}}								
+								</small>
+								</div>
+							</h2>
+							{{if accountingentries:}}
+								<table id="movements" class="table table-hover table-striped" style="font-size:11px">
+									<thead>
+										<tr>
+											<th width="20%">Fecha</th>
+											<th width="20%">Factura</th>
+											<th width="40%">Concepto</th>
+											<th width="8%" style="text-align:right">Total</th>
+											<th width="8%" style="text-align:right">Saldo</th>
+											<th width="4%"><i class='glyphicon glyphicon-trash'></i></th>
+										</tr>
+									</thead>
+
+									<tbody>
+								
+										{{for accounting in accountingentries:}}
+											{{
+												invoice_number=""
+												if accounting.invoices:
+													invoice_number=accounting.invoices.invoice_number
+													pass
+											}}
+											<tr id="{{=accounting.accountingentries.id}}">
+												<td>{{=accounting.accountingentries.annotated_at.strftime("%d-%m-%Y %H:%M")}}</td>
+												{{if invoice_number!="":}}
+													<td>{{=A(invoice_number, _href=URL(request.application, 'administrator', 'viewinvoice', args=accounting.invoices.id))}}</td>
+												{{else:}}
+													<td>{{=invoice_number}}</td>
+												{{pass}}
+												<td>{{=accounting.products.name}}</td>
+												<td style="text-align:right">{{=accounting.accountingentries.total}}</td>
+												<td style="text-align:right">{{=accounting.accountingentries.balance}}</td>
+												<td class="delete"></td>
+											</tr>
+										{{pass}}
+									
+									</tbody>
+								</table>
+							{{else:}}
+								<div class="alert alert-info">No hay registros </div>
+							{{pass}}
+						</div>
+					</div>
+
+					
+				</div>
+			</div>
+			
+		</div>
+</div>
+
+<div id="confirmdelete" class="modal fade" role="dialog" aria-labelledby="cancel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4>{{="Rectificación de movimiento"}} 				<button class="close" data-dismiss="modal">×</button></h4>
+
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-danger">Atención, esta acción es muy delicada. Sólo debería borrar este movimiento si está realmente seguro y cree que se ha introducido por error al generar contratos de forma manual</div>
+				{{="Este apunte de movimiento va a ser eliminado y afectará al saldo de crédito de la cuenta del cliente y los saldos de cada apunte de cada movimiento. No se puede rehacer. ¿Está seguro de querer hacer esto?"}}
+
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-inverse" data-dismiss="modal" id="continue">No</button>
+				<button class="btn btn-primary" onclick="confirmdelete()">{{="Sí, eliminar"}}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="loading_modal" class="modal fade" aria-labelledby="loading_modal" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-body" style="text-align:center;">
+				<p><img src="{{=URL('static','images/ajax-loader.gif')}}" style="margin-right: 30px;">   Actualizando datos...</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+
+	var accountingentries_id;
+
+	jQuery('#invoicesandmovements a').click(function (e) {
+	  e.preventDefault()
+	  $(this).tab('show')
+	});
+	
+
+	jQuery('div#_autocomplete_cities_poblacion_div').css({'z-index':'100'});
+	jQuery('div#_autocomplete_province_provincia_div').css({'z-index':'100'});
+
+	
+    jQuery("form").bind("keypress", function(e) {
+            if (e.keyCode == 13) return false;
+      });
+
+
+    jQuery(document).ready(function(){
+    	{{if request.args(1)=="movements":}}
+			jQuery('#invoicesandmovements a:last').tab('show');
+		{{else:}}
+			jQuery('#invoicesandmovements a:first').tab('show');
+		{{pass}}
+    	
+    	help=jQuery('span.glyphicon-question-sign');
+	    help.popover({placement:'bottom',                  
+	                  content:'Número de Identificación Fiscal / Código Único de Identificación Tributaria'
+	                });
+
+
+	    help.hover(
+	            function(){
+	                jQuery(this).popover('show');
+	            }, function() {
+	                jQuery(this).popover('hide');               
+	            }
+	        );
+	    help.click(function(){
+	            jQuery(this).popover('hide');
+	        }); 
+    });
+
+
+	jQuery('table.tinvoices tbody tr').on('click', function(){
+		window.location="{{=URL('administrator','viewinvoice')}}/"+jQuery(this).attr('id');
+	});
+    jQuery('table.tbudgets tbody tr').on('click', function(){
+		window.location="{{=URL('budgets','viewbudget')}}/"+jQuery(this).attr('id');
+	});
+    jQuery('table.torders tbody tr').on('click', function(){
+		window.location="{{=URL('orders','vieworder')}}/"+jQuery(this).attr('id');
+	});
+
+    var tr=jQuery("table#movements tbody tr");
+
+	tr.hover(
+		function(){
+			var self=jQuery(this);
+
+			
+			var td_delete=self.children('td.delete');
+			if (td_delete.find('i.glyphicon-trash').length==0)
+				td_delete.append("<i class='glyphicon glyphicon-trash' style='cursor:pointer'></i>");
+			td_delete.unbind();
+			td_delete.click(function(){
+				accountingentries_id=jQuery(this).parent('tr').attr('id');
+				
+				jQuery('#confirmdelete').modal({'show':true, 'backdrop':false});
+			});
+
+		}, function () {
+
+			jQuery(this).find("i.glyphicon-trash").remove();
+
+		}
+	);
+
+	function confirmdelete(){
+		jQuery('#confirmdelete').modal('hide');
+		jQuery.ajax({
+			beforeSend: function(request) {jQuery('#loading_modal').modal({'show':true, 'backdrop':false})
+			},
+			type: "POST",
+			cache: false,
+			datatype: "text",
+			data: {'customer':'{{=userid}}', 'accountingentries':accountingentries_id},
+			url:'{{=URL(r=request,c="administrator", f="delete_accountingentry")}}',
+			success: function(data) {
+				if (data=="ok") {
+					jQuery('#loading_modal').modal('hide');
+					window.location="{{=URL(request.application, 'administrator','editcustomer',args=[userid,'movements'])}}"
+				} else {
+					jQuery('.flash').html('No se pudo realizar la operación. Los datos enviados no son correctos').slideDown();
+					jQuery('#loading_modal').modal('hide');
+				}
+				
+			},
+			error: function(obj,msg,thr) {
+				jQuery('#loading_modal').modal('hide');
+				jQuery('.flash').html('Ocurrió un error: '+ msg).slideDown();
+			}
+		});
+	}
+
+
+
+
+
+</script>

@@ -1,0 +1,144 @@
+{{extend 'layout_grove.html'}}
+<div class="widewrapper pagetitle">
+	<div class="container">
+		<h1>Procedimiento de contratación</h1>
+	</div>
+</div>
+<div class="widewrapper">
+
+
+	<div class="container">
+		<h2>Has elegido el plan <strong>"{{=plan.planname}}".</strong> {{="¿En qué consiste?"}}</h2>
+
+
+		{{=XML(plan.explanation)}}
+
+
+
+
+
+		{{if plan.planname=="Paga si vendes":}}
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Detalles del pedido</div>
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Concepto</th>
+								<th style="text-align:right">total</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Carga {{="crédito mínimo"}} </td><td style="text-align:right">40€</td>
+							</tr>
+							<tr>
+								<td><div class="checkbox" style="margin:0 0 0 20px; padding:0"><label><input type="checkbox" checked="checked">1 año certificado SSL</label></td><td style="text-align:right">10€</td>
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-sm-6" id="tabletotal">
+			</div>
+
+		</div>
+		{{elif plan.planname=="Tarifa plana":}}
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Detalles del pedido</div>
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Concepto</th>
+								<th style="text-align:right">total</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Suscripción mensual "Tarifa plana" </td><td style="text-align:right">18,00€</td>
+							</tr>
+							<tr>
+								<td><div class="checkbox" style="margin:0 0 0 20px; padding:0"><label><input type="checkbox" checked="checked"><span class="cert">Certificado SSL</span></label></td><td style="text-align:right">0€</td>
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-sm-6" id="tabletotal">
+			</div>
+		</div>
+		{{pass}}
+		
+		<div class="pull pull-right"><button class="btn btn-grove-one btn-xlg btn-bold" id="dopayment">Realizar pago</a></div>
+	</div>
+
+</div>
+
+
+
+
+
+<script type="text/javascript">
+
+	{{if plan.planname=="Paga si vendes":}}
+		var withcert='{{=XML('<h1>Total pedido </h1><table class="table"><tbody><tr><td width="80%">Importe total</td><td style="text-align:right;">50€</td></tr><tr><td width="80%">21% IVA</td><td style="text-align:right;">10,50€</td></tr><tr><td width="80%"><h1>TOTAL</h1> </td><td style="text-align:right;"><h1>60,50€</h1></td></tr></tbody></table>')}}';
+		var nocert='{{=XML('<h1>Total pedido </h1><table class="table"><tbody><tr><td width="80%">Importe total</td><td style="text-align:right;">40€</td></tr><tr><td width="80%">21% IVA</td><td style="text-align:right;">8,40€</td></tr><tr><td width="80%"><h1>TOTAL</h1> </td><td style="text-align:right;"><h1>48,40€</h1></td></tr></tbody></table>')}}';
+		jQuery(document).ready(function(){
+				jQuery('div#tabletotal').html(withcert);
+			});
+
+		jQuery('input[type="checkbox"]').click(function(){
+			if (jQuery(this).is(':checked')){
+				jQuery('div#tabletotal').html(withcert);
+			} else {
+				jQuery('div#tabletotal').html(nocert);
+			}
+		});
+
+	{{elif plan.planname=="Tarifa plana":}}
+		var resume='{{=XML('<h1>Total pedido </h1><table class="table"><tbody><tr><td width="80%">Importe total</td><td style="text-align:right;">18,00€</td></tr><tr><td width="80%">21% IVA</td><td style="text-align:right;">3,78€</td></tr><tr><td width="80%"><h1>TOTAL</h1> </td><td style="text-align:right;"><h1>21,78€</h1></td></tr></tbody></table>')}}';
+		
+		jQuery(document).ready(function(){
+				jQuery('div#tabletotal').html(resume);
+			});
+		jQuery('input[type="checkbox"]').click(function(){
+			if (jQuery(this).is(':checked')){
+				jQuery('span.cert').html("Certificado SSL");
+			} else {
+				jQuery('span.cert').html("Prefiero gestionarme yo el certificado");
+			}
+		});
+	{{pass}}
+
+
+	jQuery('button#dopayment').on('click', function(){
+		cert=jQuery('input[type="checkbox"]').is(':checked');
+		console.log(cert);
+		jQuery.ajax({
+			beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+			type: "GET",
+			cache: false,
+			dataType: 'text',
+			data:{'host':'{{=request.vars.host}}', 'plan':'{{=request.vars.plan}}', 'cert':cert},
+			url: "{{=URL('plans','payment')}}",
+			success: function(result){
+				console.log("-->" + result);
+				if (result=="OK") {
+					window.location="{{=URL(r=request, a=request.application, c='payment', f='index', vars=dict(plan=request.vars.plan), host=True)}}"
+				}
+
+			},
+			error: function(obj,msg,thr) {
+				jQuery('.flash').html('Ocurrió un error y no se pudo borrar el post').slideDown();
+			}
+		});
+	});
+
+
+
+</script>

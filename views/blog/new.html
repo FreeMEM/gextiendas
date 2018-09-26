@@ -1,0 +1,56 @@
+{{extend 'layout_grove.html'}}
+<div class="widewrapper pagetitle">
+	<div class="container">
+		<h1>{{="Edición de nueva publicación"}}</h1>
+	</div>
+</div>
+
+
+<div class="widewrapper ">
+    <div class="container content">
+
+		{{=form.custom.begin}}
+			{{=T('Title')}}: 
+			<div class="row">
+				<div class="col-xs-9">
+				{{=form.custom.widget.title}}
+				</div>
+				{{if auth.has_membership('administradores') or auth.has_membership('superadministradores'):}}
+					<div class="col-xs-3">
+						<div class="btn-group">					
+						<a href="{{=URL('blog','new')}}" class="btn btn-primary" type="button" role="button"><span class="glyphicon glyphicon-plus"></span> {{="Nueva publicación"}}</a>
+						<a href="{{=URL('administrator','bloglist')}}" class="btn btn-default" role="button"><span class="glyphicon glyphicon-list"></span> lista</a>
+						</div>
+					</div>
+				{{pass}}
+				
+			</div>
+			{{=T('Subtitle')}}:
+			<div class="row">
+				<div class="col-xs-12">{{=form.custom.widget.subtitle}}</div>
+			</div>
+			{{=T('Image')}}:
+			<div class="row">
+				<div class="col-xs-12">{{=form.custom.widget.image}} Por favor 750x500px. Lo que se suba se reescalará a 3 imágenes con anchos 750px, 470px y 263px</div>
+			</div>
+			{{=T('Tags')}}:
+			<div class="row">
+				<div class="col-xs-4">{{=form.custom.widget.tags}}</div>
+			</div>
+			{{=T('Post')}}:
+			<div class="row">
+				<div class="col-xs-12">{{=form.custom.widget.post}}</div>
+			</div>
+			</br>
+			{{=form.custom.submit}}
+		{{=form.custom.end}}
+	</div>
+</div>
+
+
+
+
+<script>
+
+
+</script>

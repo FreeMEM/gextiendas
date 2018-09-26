@@ -1,0 +1,221 @@
+<h3>Estado y servicios de la tienda</h3>
+
+<div class="row ">
+
+	<div class="col-lg-12">
+
+		<div class="well">			
+
+
+		<h1>{{=host}}.gextiendas.es <small>{{=ip}}</small></h1>
+			<h2>Plan de servicio: <small>{{=stores[0].priceplans.planname}}</small> <a href="{{=URL('enabledomain', vars=dict(host=host), extension=False)}}"  class="btn btn-default btn-sm" id='plan_change_button'><span class="glyphicon glyphicon-shopping-cart"></span> Cambiar plan</a></h2>
+			<table>
+				{{if (stores[0].domainshops.host!=None) and (stores[0].domainshops.domain!=None):}}
+					<thead>
+						<th>Host</th>
+						<th>Dominio</th>
+						<th></th>
+						<th></th>
+						<th></th>
+					</thead>
+				{{pass}}
+				<tbody>
+					{{for store in stores:}}		
+						{{if (store.domainshops.host!=None) and (store.domainshops.domain!=None):}}
+							<tr>
+
+								<td width="15%" class="hostname">
+									<input class="form-control col-sm-2 hostdomain" placeholder="www" value="{{=store.domainshops.host}}" hostname="{{=store.domainshops.host}}">
+								</td>
+								<td width="70%" class="domain">
+									<input class="form-control col-sm-7 inputdomain" placeholder="ejemplo: gestionexperta.com" value="{{=store.domainshops.domain}}" domain="{{=store.domainshops.domain}}">
+								</td>
+								<td width="5%">
+									{{if store.domainshops.active=="disabled":}}
+										<span class="input-group-btn">
+											<a href="{{=URL('enabledomain', vars=dict(host=host), extension=False)}}" class="btn btn-warning" type="button">habilitar</a>
+										</span>
+									{{elif store.domainshops.active=="enabled":}}
+										<span class="input-group-btn"><button class="btn btn-warning disabled" type="button">habilitado</button></span>
+									{{elif store.domainshops.active=="modifying":}}
+										<span class="input-group-btn"><button class="btn btn-warning disabled" type="button">{{="modificándose"}}</button></span>
+									{{else:}}
+										<span class="input-group-btn"><button class="btn btn-warning disabled" type="button">procesando</button></span>
+									{{pass}}	
+
+								</td>
+								<td width="5%"><span class="input-group-btn"><button class="btn btn-default modify" host="{{=host}}"><span class="glyphicon glyphicon-pencil"></span></button></span></td>
+								<td width="5%"><span class="input-group-btn"><a class="btn btn-default delete" host="{{=host}}" domain="{{=store.domainshops.domain}}" hostname="{{=store.domainshops.host}}" type="button" data-toggle="modal" href="#modaldelete"><span class="glyphicon glyphicon-remove"></span></a></span></td>
+							</tr>
+							
+							{{else:}}
+								<tr>
+									<td><div class="alert alert-info">No hay dominios establecidos para esta tienda</div></td>
+								<tr>
+								<tr><td>Las multitiendas están soportadas, por lo que puedes establecer cuantos dominios quieras para esta tienda.</td></tr>
+							{{pass}}
+
+					{{pass}}
+				</tbody>
+			</table>
+		
+			<div style="margin-top:10px">
+				<a class="btn btn-grove-one" href="{{=URL('setdomain', vars=dict(shop=host), extension=False)}}">
+					<span class="glyphicon glyphicon-plus"></span>{{=" Añadir dominio"}}
+				</a>
+			</div>
+		</div>
+
+
+			
+		{{if contractedproducts: }}
+
+			<table class="table table-hover">
+				<tbody>
+					{{for contracted in contractedproducts:}}
+						<tr>
+							
+							<td>{{=contracted}}</td>
+						</tr>
+					{{pass}}
+				</tbody>
+			</table>
+		{{else:}}
+			<p>
+				<h1>{{="Todavía no tienes productos contratados"}}</h1>
+
+			</p>
+		{{pass}}
+
+	</div>
+
+	
+</div>
+
+
+<div id="modaldelete" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">×</button>
+    			<h3>{{=XML("Eliminación de <strong>dominio</strong>")}}</h3>
+			</div>
+
+	  		<div class="modal-body">
+			    <p>Vas a eliminar el dominio en esta tienda y esto dejará a tus clientes sin acceso al mismo. ¿{{="Estás"}} seguro de querer hacerlo?</p> 
+			    <p>Tardaremos unos minutos en hacer efectivo el cambio.</p>
+  			</div>
+  			<div class="modal-footer">
+    			<button class="btn btn-inverse" data-dismiss="modal">Cancelar</button>
+    			<button class="btn btn-primary" id="delete">Eliminar dominio</button>
+  			</div>
+		</div>
+	</div>
+</div>
+
+{{pass}}
+
+<script type="text/javascript">
+	
+	var host="";
+	var hostname="";
+	var domain="";
+
+	jQuery(document).ready(function(){
+		jQuery('.inputdomain').popover({placement : 'top',
+										title : 'Profesionaliza tu tienda',
+										content : 'Habilita tu dominio elegiendo cualquiera de los planes de precios que hemos diseñado. Te regalamos y gestionamos el certificado SSL mientras tengas cualquier plan de suscripción mensual con nosotros'});
+		jQuery('#plan_change_button').popover({placement : 'bottom',
+										title : 'Cambia a planes más ventajosos',
+										content : 'Te queremos ayudar con el control de tus gastos. Tú eliges, paga sólo si vendes o contrata nuestras tarifas planas, para que tus gastos sean fijos, vendas lo que vendas. Y si quieres impulsar tu tienda, aprovecha las ofertas Social Media y SEO.'});
+
+		jQuery('div#modaldelete').modal('hide');
+		
+		jQuery('a.delete').on('click', function(){
+			host=jQuery(this).attr('host');
+			hostname=jQuery(this).attr('hostname');
+			domain=jQuery(this).attr('domain');
+		});
+
+	});
+
+	jQuery('.inputdomain').hover(
+		function(){
+			jQuery(this).popover('show');
+		}, function() {
+			jQuery(this).popover('hide');				
+		}
+	);
+	jQuery('.inputdomain').click(function(){
+		jQuery(this).popover('hide');
+	});
+
+	jQuery('#plan_change_button').hover(
+		function(){
+			jQuery(this).popover('show');
+		}, function() {
+			jQuery(this).popover('hide');				
+		}
+	);
+	jQuery('#plan_change_button').click(function(){
+		jQuery(this).popover('hide');
+	});
+
+	jQuery('button.modify').on('click', function(){
+		var host=jQuery(this).attr('host');
+		var hostname=jQuery(this).parent('span').parent('td').parent('tr').children('td.hostname').children('input').val();
+		var domain=jQuery(this).parent('span').parent('td').parent('tr').children('td.domain').children('input.inputdomain').val();
+		var o_domain=jQuery(this).parent('span').parent('td').parent('tr').children('td.domain').children('input.inputdomain').attr('domain');
+		var o_hostname=jQuery(this).parent('span').parent('td').parent('tr').children('td.hostname').children('input').attr('hostname');
+
+
+		jQuery.ajax({
+			beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+			type: "GET",
+			cache: false,
+			dataType: 'text',
+			data: {'host':host, 'hostname': hostname, 'domain':domain, 'o_hostname':o_hostname, 'o_domain':o_domain},
+			url:'{{=URL(c="account",f="modifydomain", user_signature=True)}}',
+			success: function(data) {
+				if (data=="ok") {
+					window.location="{{=URL('account','index', extension=False)}}";
+				}else {
+					jQuery('.flash').html('La operación no pudo realizarse. ' + data +'\n Inténtelo de nuevo').slideDown();
+				}
+				
+			},
+			error: function(obj,msg,thr) {
+				jQuery('.flash').html('Ocurrió un error: '+ msg).slideDown();
+			}
+		});
+	});
+
+	jQuery('button#delete').on('click', function(){
+
+		jQuery.ajax({
+			beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+			type: "GET",
+			cache: false,
+			dataType: 'text',
+			data: {'host':host, 'hostname': hostname, 'domain':domain},
+			url:'{{=URL(c="account",f="deletedomain", user_signature=True)}}',
+			success: function(data) {
+				if (data=="ok") {
+					jQuery('div#modaldelete').modal('hide');
+					window.location = "{{=URL('account','index', extension=False)}}";
+				} else {
+					jQuery('div#modaldelete').modal('hide');
+					jQuery('.flash').html('La operación no pudo realizarse. ' + data + ' Inténtelo de nuevo').slideDown();
+				}
+				
+			},
+			error: function(obj,msg,thr) {
+				jQuery('div#modaldelete').modal('hide');
+				jQuery('.flash').html('Ocurrió un error: '+ msg).slideDown();
+			}
+		});
+		
+	});
+
+
+</script>

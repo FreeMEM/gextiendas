@@ -1,0 +1,96 @@
+
+
+
+<div class="row">
+	<div class="col-lg-3  col-sm-3">
+		<div class="row">
+			
+			<div class="col-lg-7">
+				<p><strong>{{=T("Stores")}}: {{=len(shops)}}/10</strong></p>
+			</div>
+			<div class="col-lg-5">
+				<a href="{{=URL('account', 'newshop')}}" type="button" class="btn btn-grove-one btn-sm" id="createshop_button">{{=T('Create Store')}}</a>
+			</div>
+			
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<table class="table table-hover" style="cursor:pointer;">
+					<tbody>
+					{{
+						label={'generating':'warning', 'enabled':'success', 'disabled':'deshabilitado'}
+					}}
+					{{for shop in shops:}}
+						<tr class="store {{=('','selected')[shop.name==session.shopname]}}" shopname="{{=shop.host}}">
+							<td width="70%" >{{=shop.name}}</td>
+							<td width="30%"><span class="label label-{{=label[shop.status]}}">{{=T(shop.status)}}</span></td>
+						</tr>
+					{{pass}}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-9 col-sm-9" id="datashop"  style="min-height: 400px">
+		<div class="jumbotron"  style="min-height: 300px">
+
+			<h1><span class="glyphicon glyphicon-hand-left"></span> Seleccione tienda</h1>
+		</div>
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+	var content=jQuery('div#datashop');
+	jQuery('tr.store').on('click', function(){
+		var host=jQuery(this).attr('shopname');
+		loadstore(host);
+		jQuery('tr').removeClass('selected');
+		jQuery(this).addClass('selected');
+	});
+
+	jQuery(document).ready(function(){
+		var createshop_button= jQuery('#createshop_button');
+		createshop_button.popover({	placement : 'bottom',
+									
+									content : 'Crea  y gestiona de forma gratuita las tiendas que necesites'});
+
+		createshop_button.hover(
+			function(){
+				jQuery(this).popover('show');
+			}, function() {
+				jQuery(this).popover('hide');				
+			}
+		);
+		createshop_button.click(function(){
+			jQuery(this).popover('hide');
+		});	
+		{{if session.shopname:}}
+			{{=XML("loadstore('%s')"%session.shopname)}}
+		{{pass}}
+
+
+	});
+	
+	
+
+
+	function loadstore(host) {
+		jQuery.ajax({
+			beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+			type: "GET",
+			cache: false,
+			dataType: 'html',
+			data: {'host':host},
+			url:'{{=URL(c="account",f="storeboard")}}',
+			success: function(data) {
+				content.html(data);
+			},
+			error: function(obj,msg,thr) {
+				jQuery('.flash').html('Ocurrió un error: '+ msg).slideDown();
+			}
+		});
+	}
+
+</script>

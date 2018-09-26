@@ -1,0 +1,212 @@
+{{extend 'layout_grove.html'}}
+<div class="widewrapper pagetitle">
+	<div class="container">
+		<h1>{{="Software como Servicio, Cloud y Comercio Electrónico"}}</h1>
+	</div>
+</div>
+<div class="container" role="main">
+    <div class="row content">
+
+        <div class="col-sm-8">
+			{{if posts:}}
+				{{for post in posts:}}
+					<section id="blog-posts">
+                		<article class="blog-post">
+                			<header>
+	                            <h1 class="title"><a href="{{=URL(request.application, 'blog','show', args=post.urlfriendly)}}">{{=post.title}}</a></h1>
+	                            
+	                            <div class="comment-count">
+	                                <a href="{{=URL(request.application, 'blog','show', args=post.id)}}#comments">
+	                                    <span>{{=db(db.comments.blog==post.id).count()}} {{=T('Comments')}}</span>
+	                                    <i class="glyphicons conversation"><i></i></i>
+	                                </a>
+	                            </div>   
+	                            <h2 class="subtitle"><a href="{{=URL(request.application, 'blog','show', args=post.id)}}">{{=post.subtitle}}</a></h2>
+
+	                            <div class="clearfix"></div>
+
+	                        </header>
+                            {{if post.image!=None:}}
+								
+								<img class="leadimage img-responsive" src="{{=URL(request.application, 'blog', 'download',args=db.images(post.image).image)}}" alt="Blog Picture">
+							{{pass}}
+							<div class="meta">
+			       				<small>
+									<i class="glyphicon glyphicon-calendar"></i><span> Publicado por {{=post.user.first_name}} {{=post.user.last_name}} el {{=post.created_on.strftime("%d-%m-%Y  %H:%M")}}, </span>
+									<span>{{=prettydate(post.created_on,T)}} </span>
+
+
+									{{if auth.has_membership('administradores') or auth.has_membership('superadministradores'):}}
+									<i class="verticalSeparator"></i>|
+										<a href="{{=URL('blog','edit', vars=dict(draft=None, blog=post.id))}}"> <i class="glyphicon glyphicon-pencil"></i> </a>
+										<a href="#modalremove" class="btn btnremove" data-toggle="modal" id="{{=post.id}}"><i class="glyphicon glyphicon-remove"></i></a>
+									{{pass}}
+	                        	</small>
+	                        </div>
+							<p>
+								{{
+									s_post= post.post[:900]
+									if len(post.post)>900:
+										s_post= "%s %s" %(s_post, A(' [ seguir leyendo...]', _href=URL(request.application, 'blog','show', args=post.urlfriendly)))	
+				       			  	pass
+
+								}}
+
+								{{
+									=XML(s_post, sanitize=True,
+									permitted_tags=['a', 'b', 'blockquote', 'br/', 'i', 'li',
+									'ol', 'ul', 'p', 'cite', 'code', 'pre', 'img/', 'span', 'strong', 'u', 'i', 'h1','h2','h3','h4','h5','h6', 'table','tr','td','th','tbody','thead','div','iframe','object','param','param/','param /','embed','embed/','em','/em'],
+									allowed_attributes={'a':['href', 'title'],
+									'img':['src', 'alt', 'style'], 'blockquote':['type'], 'span':['style'],
+									'iframe':['class', 'width', 'height', 'src', 'webkitallowfullscreen', 'mozallowfullscreen', 'allowfullscreen', 'frameborder'],
+									'object':['classid','codebase','height','hspace', 'vspace','width','style'],
+									'param':['name', 'value'],
+									'embed':['height','hspace','pluginspage','quality','src','vspace','width','allowscriptaccess','allowfullscreen','type'],
+									'div':['class'],
+									'p':['class']
+									})
+				       			}}
+			       			</p>
+
+
+			       		<hr>
+		       			</article>
+
+		       	{{pass}}
+
+		    {{else:}}
+	       		 <div class="col-sm-8">
+					<section id="blog-posts">
+                		<article class="blog-post">
+                			<header>
+	                            <h2 class="title">{{="No hay registros"}}</h2>
+	       		
+	       						<div class="alert alert-info">
+    								{{="Su blog está vacío"}} <strong> {{=A("Cree su primera publicación", _href=URL('blog','new'))}}</strong> 
+  								</div>
+  							</header>
+  						</article>
+  					</section>
+	       		</div>
+	       	{{pass}}
+			</div>
+			<aside class="col-sm-4 blog-sidecolumn">
+				{{if auth.has_membership('administradores') or auth.has_membership('superadministradores'):}}
+				<div class="widget">
+					<div class="btn btn-group pull-right">
+					  <a href="{{=URL('blog','new')}}" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> {{="Nueva publicación"}}</a>
+					  <a href="{{=URL('administrator','bloglist')}}" class="btn btn-default"><i class="glyphicon glyphicon-list"></i></a>
+					</div>
+					
+					<div class="clearfix"></div>
+				</div>	
+				{{pass}}
+				
+				
+				<div class="widget">
+					{{if lastposts:}} 
+					<h3>{{="10 últimas publicaciones"}}</h3>
+					<ul class="grove-list">
+						{{for post in lastposts:}}
+							<li>
+							{{=A(XML('<h4 class="list-group-item-heading">%s</h4><p class="list-group-item-text">%s </p><p><small>%s</small></p>' %(post.title, post.subtitle, prettydate(post.created_on,T))), _href=URL(request.application, 'blog','show', args=post.id), _class="list-grop-item")}}
+							</li>	
+						{{pass}}
+					</ul>
+
+					{{pass}}
+		        </div>
+
+		     </aside>
+		</div>
+		{{if records>=items_per_page:}}
+			<div class="well" style="text-align:center">
+			{{=pagination}}	
+			</div>
+		{{pass}}
+</div>
+
+<div id="modalremove" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">×</button>
+				<h3>Confirmación de borrado</h3>
+			</div>
+
+	  		<div class="modal-body">
+    			<p>El borrado será permanente, ¿está seguro de querer eliminar la publicación?</p>
+  			</div>
+  			<div class="modal-footer">
+    			<button class="btn btn-inverse" data-dismiss="modal">Cancelar</button>
+    			<button class="btn btn-primary" id="remove">Borrar</button>
+  			</div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+
+	function fixFlash() {
+	    $('object').each(function(){
+			$(this).find('embed').attr('wmode','transparent');
+			if($(this).find('param[name=wmode]').attr('value') != 'transparent') {
+				$(this).prepend('<param name="wmode" value="transparent" />');
+			}
+			temp_var = $(this).parent().html();
+			$(this).parent().html(temp_var);
+	    });
+	}
+	
+	jQuery(document).ready(function () {
+		jQuery('iframe').each(function(){
+			var url = jQuery(this).attr("src");
+			jQuery(this).attr("src",url+"?wmode=transparent");
+		});
+	
+		fixFlash();
+
+		var id=0;
+
+		jQuery('div#modalremove').modal('hide');
+
+		jQuery('a.btnremove').click(function(){
+
+			ahref=jQuery(this);
+			id=ahref.attr('id');
+
+		});
+
+
+	 	jQuery('button#remove').click(function(){
+			jQuery.ajax({
+				beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+				type: "POST",
+				cache: false,
+				dataType: 'text',
+		      	url: "{{=URL('blog','delete/')}}"+id,
+				success: function(result) {
+					if (result=="OK") {
+						window.location = "{{=URL('blog','index')}}";
+					} else {
+						jQuery('div#modalremove').modal('hide');
+						jQuery('.flash').html('Ocurrió un error y no se pudo borrar el post').slideDown();
+					}
+				},
+				error: function(obj,msg,thr) {
+				alert("error obj:  "+obj+" error msg:  "+msg+" thr:  "+thr);
+				}
+			});
+		});
+
+	});
+
+
+	
+	jQuery('#contactar').click(function(){
+		window.location="{{=URL(request.application, 'contactus', 'index')}}";
+	})
+
+	
+</script>

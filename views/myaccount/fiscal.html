@@ -1,0 +1,41 @@
+{{extend 'layout_grove.html'}}
+<div class="widewrapper">
+
+	<div class="container content">
+		<h1>No tenemos sus datos fiscales. Por favor rellene los datos.</h1>
+		{{=form}}
+	</div>
+</div>
+<script type="text/javascript">
+	jQuery('div#_autocomplete_cities_poblacion_div').css({'z-index':'100'});
+	jQuery('div#_autocomplete_province_provincia_div').css({'z-index':'100'});
+
+	
+    jQuery("form").bind("keypress", function(e) {
+            if (e.keyCode == 13) return false;
+      });
+
+
+    jQuery(document).ready(function(){
+    	help=jQuery('span.glyphicon-question-sign');
+	    console.log(help);
+	    help.popover({placement:'bottom',                  
+	                  content:'Número de Identificación Fiscal / Código Único de Identificación Tributaria'
+	                });
+
+
+	    help.hover(
+	            function(){
+	                jQuery(this).popover('show');
+	            }, function() {
+	                jQuery(this).popover('hide');               
+	            }
+	        );
+	    help.click(function(){
+	            jQuery(this).popover('hide');
+	        }); 
+    });
+    
+
+
+</script>

@@ -1,0 +1,212 @@
+{{extend 'layout_grove.html'}}
+
+{{if invoice:}}
+<div class="container content">
+	<div class="row">
+		<div class="col-xs-9 col-md-9">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="well">
+						<h4>Datos fiscales</h4>
+						<p> {{=('%s %s' % (invoice.auth_user.first_name,invoice.auth_user.last_name), invoice.fiscals.fiscalname)[invoice.fiscals.fiscalname!=None]}}</p>
+						<p>{{=invoice.fiscals.tax_identification}}</p>
+						<p>{{=invoice.fiscals.address}}</p>
+						<p>{{=invoice.fiscals.postal_code}} {{=invoice.fiscals.city}}</p>
+						<p>{{=invoice.fiscals.province}} ({{=invoice.fiscals.country}})</p>
+						<p>{{="Teléfono: "}}{{=invoice.fiscals.phone}}</p>
+						
+					</div>
+				</div>
+				<div class="col-md-6">
+					
+						<p><h1>{{="Factura nº:"}} {{=invoice.invoices.invoice_number}}</h1></p>
+						<dl class="dl-horizontal">
+							<dt>Fecha:</dt>
+							<dd>{{=invoice.invoices.created_at.strftime("%d-%m-%Y")}}</dd>
+							<dt>{{="Pedido número:"}}</dt>
+							<dd>{{=order.id}}</dd>
+							<dt>Estado:</dt>
+							<dd>
+							{{
+								if order.status=="Pagado":
+									=XML('<span class="label label-success">%s</span>' % order.status)
+								elif order.status=="Pendiente pago":
+									=XML('<span class="label label-danger">%s</span>' % order.status)
+								else:
+									=XML('<span class="label label-warning">%s</span>' % order.status)
+								pass
+							}}
+							</dd>
+							<dt>Forma de pago:</dt>
+							<dd>{{=order.payment_method}}</dd>
+							{{if order.payment_method=="Transferencia":}}
+								<dt>Código transferencia:</dt>
+								<dd>{{=("----------",order.payment_code.code)[order.payment_code!=None]}}</dd>
+							{{pass}}
+							
+						</dl>
+						
+					
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-3 col-md-3">
+			<div class="pull">
+				<div class="pull-right"> 
+
+
+					<div class="btn-group-vertical">
+						<button class="btn btn-grove-three" onClick="printinvoice();" >
+							<i class="glyphicons print"><i></i></i>
+							Descargar en pdf
+						</button>
+					</div>
+					<div>
+
+					</div>
+					
+				</div>	
+			</div>
+
+		</div>
+	</div>
+	<div class="row">
+
+		<div class="col-md-12">
+
+
+
+			<table class="table table-hover" >
+
+				<thead>
+					<tr>
+						<th>Producto</th>
+						<th style='text-align:right'>Cantidad</th>
+						<th style='text-align:right'>Precio</th>
+						{{if invoice.invoices.discount!=0:}}
+							<th style='text-align:right'>Descuento</th>
+						{{pass}}
+						<th style='text-align:right'>IVA</th>
+						<th style='text-align:right'>total</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{for item in orderlist:}}
+						
+						<tr id="{{=item.orderlist.id}}">
+							
+							<td width='75%'>{{=item.products.name}}</td>
+							<td width='1%' class="quantity">{{=item.orderlist.quantity}}</td>
+							
+							<td width='1%' class='original_price' style='text-align:right'>
+								{{="%.2f"%float(item.orderlist.price)}}
+							</td>
+							{{if invoice.invoices.discount!=0:}}
+								<th style='text-align:right'>{{="%.2f"%float(item.orderlist.dto)}}</th>
+							{{pass}}
+
+							<td style='text-align:right' class="taxes">
+								{{if item.orderlist.tax:}}
+									{{="%.2f" % float(item.orderlist.tax)}}
+								{{else:}}
+									{{="%.2f"%(item.taxes.value)}}
+								{{pass}}
+							</td>	
+							<td width='5%' style='text-align:right' class="totalrow" total_fixer='{{="%.2f" % (float(item.orderlist.quantity) * float(item.orderlist.price)) }}'>
+								{{="%.2f" % (float(item.orderlist.quantity) * float(item.orderlist.price)) }}						
+							</td>
+						</tr>
+					{{pass}}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<dl id="desglose" class="dl-horizontal pull-right">
+				<dt >Subtotal</dt>
+				<dd id="id_subtotal" style="text-align:right;">{{="%.2f"% float(invoice.invoices.subtotal)}}</dd>
+			</dl>
+			<div class="clearfix"></div>
+			<dl id="desglose_iva"  class="dl-horizontal pull-right">
+				<dt> IVA {{="%.2f" % invoice.invoices.tax}}</dt>
+				<dd> {{="%.2f" % invoice.invoices.taxes}}</dd>
+			</dl>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			
+			<dl id="invoice_total" class="dl-horizontal pull-right">
+				<dt>TOTAL FACTURA:</dt>
+				<dd> <span></span> {{="%.2f" % float(invoice.invoices.total)}}{{="€"}}</dd>
+			</dl>
+
+		</div>
+	</div>
+</div>
+
+
+<div id="confirmpayment" class="modal fade" role="dialog" aria-labelledby="cancel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">×</button>
+				<h4>{{="Cambio de estado de situación de pago"}}</h4>
+				
+			</div>
+			<div class="modal-body">
+				<p>{{="Atención, va a proceder a cambiar el estado de situación de pago de la factura"}}</p>
+				<p>{{="¿Está seguro?"}}</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-inverse" data-dismiss="modal" id="continue">No</button>
+				{{=A('Pagado', _href=URL(request.application, 'orders','confirm_payment', args=[order.user], vars=dict(invoice=invoice.invoices.id)), _class="btn btn-danger")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{{else:}}
+	{{redirect(URL(request.application,'administrator','billing'))}}
+{{pass}}
+
+
+
+<script type="text/javascript">
+
+	jQuery(document).ready(function() {
+
+	
+		var taxes={}
+	
+		jQuery("tbody tr").each(function(){ 
+			
+
+
+			var tax = jQuery(this).children('td.taxes').html();
+			var number_total= Number(parseFloat(jQuery(this).children('td.totalrow').html()).toFixed(2));
+			var number_tax= (Number(parseFloat(tax).toFixed(2))* number_total/100).toFixed(2);
+
+			if (taxes[tax]) {
+				taxes[tax].content_tax.push(number_tax);
+
+			}else{
+				taxes[tax]={label_tax:tax, content_tax:[number_tax]}
+			}
+
+
+
+		}); 
+		
+		
+
+		
+	});
+
+	function printinvoice() {
+		window.location = "{{=URL(request.application,'billing', 'printinvoice', args=invoice.invoices.id)}}";
+	}
+</script>

@@ -1,0 +1,58 @@
+{{extend 'layout_grove.html'}}
+<div class="container">
+	<div style="margin-top:5px;">
+		{{=MENU(response.menu_products, _class='nav nav-tabs',li_active="active")}}
+	<div>
+	<div style="min-height:400px;">
+		{{if records>0:}}
+			<div style="margin:5px 0px 0px 0px">
+				<div class="pull pull-left">
+					{{="Número de planes: %s" % records}}
+				</div>
+				<div class="pull pull-right">
+					<a type="button" class="btn btn-default" href="{{=URL('administrator','newpriceplan')}}"><i class="glyphicon glyphicon-plus"></i> Crear plan</a>
+				</div>
+			</div>
+			<table class="table table-hover table-striped content" style="font-size:12px">
+				<thead>
+					<tr>
+						<th>{{="Nombre"}}</th>
+						<th>{{="Opción de pago"}}</th>
+						<th>{{="explicación"}}</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{
+					paymode={'free':'gratis','ifselling':'si vende','flatrate':'tarifa plana'}
+				}}
+				
+				{{for priceplan in priceplans:}}
+						
+					<tr id="{{=priceplan.id}}" style="cursor:pointer;">
+						<td width="15%">{{=priceplan.planname}}</td>
+						<td width="15%">{{=paymode[priceplan.paymode]}}</td>
+						<td width="15%">{{=('',XML(priceplan.explanation))[priceplan.explanation!=None]}}</td>
+					</tr>
+				{{pass}}
+				</tbody>
+			</table>
+
+		{{else:}}
+		
+			<div class="alert alert-info">
+				{{="No hay planes de precios"}}
+			</div>
+		
+		{{pass}}
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+	
+	jQuery('tr').on('click', function(){
+		window.location="{{=URL(request.application,'administrator','editpriceplan')}}"+"/?priceplanid="+jQuery(this).attr('id');	
+	});
+	
+</script>

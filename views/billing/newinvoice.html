@@ -1,0 +1,401 @@
+{{extend 'layout_grove.html'}}
+<div class="container content">
+	<div class="row">
+		<div class="col-xs-6 col-md-6">
+			<div class="scrollspy-products"  data-spy="scroll" data-target="#navbarproducts" data-offset="5" id="divtable">
+				<table class="table table-hover table-striped" style="font-size:11px" >
+					<thead>
+						<tr >
+							<th width="30%">Producto</th>
+							<th width="55%">{{="Descripción"}}</th>
+							<th width="15%" style='text-align:right'>Precio</th>
+
+						</tr>
+					</thead>
+					{{
+						suscriptionstr={'hours':'horas','days':'diaria', 'week':'semanal','month':'mensual','year':'anual',None:''}
+					}}
+					<tbody id="productslist" style="cursor:pointer;">
+						{{for pr in products:}}
+							<tr id="{{=pr.id}}">
+								<td>{{=pr.name}}</td>
+								<td><div>{{=('',XML(' <i class="glyphicon glyphicon-refresh"><strong>%s</strong></i>' % suscriptionstr[pr.min_period]))[pr.suscription==True]}}</div><div>{{=("",pr.description)[pr.description!=None]}}</div></td>
+								<td style='text-align:right'>{{="%.2f €" % pr.price}}</td>
+							</tr>
+						{{pass}}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="col-xs-6 col-md-6">
+			<div class="row">
+				<div class="col-xs-12 col-md-12">
+						<h1>Factura</h1>
+						<address>
+							<strong>{{=("%s %s" %(customer.auth_user.first_name, customer.auth_user.last_name), customer.fiscals.fiscalname)[customer.fiscals.fiscalname!=""]}}</strong><br>
+							{{=("",customer.fiscals.tax_identification)[customer.fiscals.tax_identification!=None]}}<br>
+							{{=("",customer.fiscals.address)[customer.fiscals.address!=None]}}<br>
+							{{=("", "%s "%customer.fiscals.postal_code)[customer.fiscals.postal_code!=None]}}
+							{{=("","%s"%customer.fiscals.city)[customer.fiscals.city!=None]}}<br>
+							{{=("","%s, "%customer.fiscals.province)[customer.fiscals.province!=None]}}
+							{{=("",customer.fiscals.country)[customer.fiscals.country!=None]}}
+						<abbr title="Phone">Teléfono:</abbr> {{=("",customer.fiscals.phone)[customer.fiscals.phone!=None]}}
+						</address>
+						<address>
+							<strong>Email</strong><br>
+							<a href="mailto:#">{{=customer.auth_user.email}}</a>
+						</address>
+
+
+					<div class="row">
+						<div class="span12">
+							<table id="torder" class="table table-condensed" style="font-size:11px">
+								<thead>
+									<tr class="well">
+										<th width="65%">Producto</th>
+										<th width="5%">cant</th>
+										<th width="10%" style='text-align:right;'>precio</th>
+										<th width="10%"style='text-align:right;'>total</th>
+										<th width="5%"><i class='glyphicon glyphicon-trash'></i></th>
+									</tr>
+								</thead>
+								<tbody id="tbodysales">
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span12">
+							<div class="pull pull-right">
+								<dl class="dl-horizontal">
+									<dt>Subtotal</dt>
+									<dd style="text-align:right"><span id="sumsubtotal">0</span>{{=" €"}}</dd>
+									<dt>IVA</dt>
+									<dd style="text-align:right"><span id="sumtax">0</span>{{=" €"}}</dd>
+									<dt>Total factura</dt>
+									<dd style="text-align:right"><span id="sumtotal">0</span>{{=" €"}}</dd>
+								</dl>
+								<div>
+
+								{{=SELECT(	OPTION('Transferencia', _value='Transferencia'),
+    										OPTION('Domiciliación', _value='Domiciliación'),
+    										value=paymentmethod,
+    										_class="form-control", 
+    										_name="paymentmethod",
+    										_style="font-size:12px")}}
+								</div>
+							</div>
+							<div class="clearfix"></div>
+							<div class="form-actions">
+								<button type="button" class="btn btn-primary" onclick="jQuery('#confirminvoice').modal({'show':true, 'backdrop':true});">Finalizar</button>
+								<button type="button" class="btn" onclick="jQuery('#cancel').modal({'show':true, 'backdrop':true});">Cancelar</button>
+							</div>
+						</div>
+					</div>					
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div id="loading_modal" class="modal fade" aria-labelledby="loading_modal" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-body" style="text-align:center;">
+				<p><img src="{{=URL('static','images/ajax-loader.gif')}}" style="margin-right: 30px;">   Actualizando datos...</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="cancel" class="modal fade" role="dialog" aria-labelledby="cancel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4>{{="Proceso de cancelación"}}<button class="close" data-dismiss="modal">×</button></h4>
+				
+			</div>
+			<div class="modal-body">
+				{{="La venta va a ser cancelada. ¿Está seguro de querer hacer esto?"}}
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-inverse" data-dismiss="modal" id="continue">No</button>
+				{{=A('Sí, cancelar', _href=URL(request.application, 'billing','cancelinvoice', vars=dict(customer=customer.auth_user.id, budget=request.vars.budget)), _class="btn btn-primary")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="confirminvoice" class="modal fade" role="dialog" aria-labelledby="cancel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				
+				<h4>{{="Confirmación de creación de factura"}}<button class="close" data-dismiss="modal">×</button></h4>
+				
+			</div>
+			<div class="modal-body">
+				<p>{{=XML("Atención, se va a generar una factura y esto conlleva la generación de un nuevo <strong> número en la serie. </strong>. Es muy importante de que esté seguro de lo que está haciendo antes de confirmar, por que no se puede deshacer.")}}</p>
+				{{=XML("<p>Recuerde también, que esta factura creada de <strong>forma manual no incrementará el saldo del crédito</strong> acumulado del cliente. Para ello tendrá que generar contratos manualmente y marcar expresamente para que anote el crédito.</p>")}}
+				<p>{{="¿Está seguro?"}}</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-inverse" data-dismiss="modal" id="continue">No</button>
+				{{=A('Pendiente de pago', _href=URL(request.application, 'billing','confirminvoice', vars=dict(customer=customer.auth_user.id, budget=request.vars.budget, paid=False, order=request.vars.order)), _class="btn btn-warning")}}
+				{{=A('Crear factura', _href=URL(request.application, 'billing','confirminvoice', vars=dict(customer=customer.auth_user.id, budget=request.vars.budget, paid=True, order=request.vars.order)), _class="btn btn-primary")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+
+
+	jQuery(document).ready(function(){
+
+		jQuery.ajax({
+			beforeSend: function(request) {jQuery('#loading_modal').modal({'show':true, 'backdrop':false})
+			},
+			type: "GET",
+			cache: false,
+			dataType: 'json',
+			data: {'customer':'{{=customer.auth_user.id}}', 'budget':'{{=request.vars.budget}}', 'order':'{{=request.vars.order}}'},
+			url:'{{=URL(r=request,c="billing", f="call",args=["json","items"])}}',
+			success: function(data) {
+				console.log("llego1");
+				jQuery('#loading_modal').modal('hide');
+				make_orderlist(data);
+				jQuery.each(data, function(i,row){
+					jQuery("table tbody#productslist tr#"+row.products.id).addClass('success');
+				});
+			},
+			error: function(obj,msg,thr) {
+				jQuery('#loading_modal').modal('hide');
+				jQuery('.flash').html('Ocurrió un error: '+ msg).slideDown();
+			}
+		});
+
+
+
+	});
+
+	jQuery('select[name="paymentmethod"]').change(function(){
+		var paymentmethod=jQuery(this).val();
+		setpayment(paymentmethod);
+	});
+
+
+	var tr=jQuery("tbody#productslist tr");
+
+	tr.on('click', function () {
+		var obj=jQuery(this);
+		jQuery.ajax({
+			beforeSend: function(request) { 
+				jQuery('#loading_modal').modal({'show':true, 'backdrop':false})
+			},
+			type: "GET",
+			cache: false,
+			data: { 'product': obj.attr('id'), 'quantity':'1', 'operation':'add', 'customer':'{{=customer.auth_user.id}}', 'budget':'{{=request.vars.budget}}'},
+			dataType: 'json',
+			url:'{{=URL(r=request,c="billing", f="call",args=["json","item"])}}',
+			success: function(data) {
+				jQuery('#loading_modal').modal('hide');
+				make_orderlist(data);
+				obj.addClass('success');
+			},
+			error: function(obj,msg,thr) {
+				jQuery('#loading_modal').modal('hide');
+				jQuery('.flash').html('Ocurrió un error: '+ msg).slideDown();
+			}
+		});
+			
+	});
+
+
+
+
+	function make_orderlist(data) {
+		var tbody=jQuery("table#torder tbody#tbodysales");
+
+		tbody.html("");
+		jQuery.each(data, function(i,row){
+			var price=parseFloat(row.orderlist.price).toFixed(2);
+			
+		 	tbody.append(
+		 		"<tr id='" + row.orderlist.id + "' product='"+ row.orderlist.product+"'><td width='60%' class='tredit'>" + row.products.name + "</td><td width='5%' class='quantity tredit' style='text-align:right;'>" + row.orderlist.quantity + "</td><td width='5%'  style='text-align:right;' class='tredit'>" + price + "</td><td class='total tredit' width='5%' style='text-align:right;  font-weight:bold;'>" + parseFloat(parseFloat(row.orderlist.quantity) * price).toFixed(2) + "</td><td width='1%' class='delete'>  </td></tr>");
+		});
+		var total_price=0;
+		jQuery(".total").each(function(){ 
+
+			total_price += Number(parseFloat(jQuery(this).html()).toFixed(2)); 
+		}); 
+
+		var tax = Number(parseFloat((parseFloat(total_price) * parseFloat("{{=tax}}"))/100).toFixed(2));
+		jQuery('#sumsubtotal').html(parseFloat(total_price).toFixed(2));
+		jQuery('#sumtax').html(tax)
+		jQuery('#sumtotal').html(parseFloat(tax+total_price).toFixed(2));
+		var tr=jQuery("tbody#tbodysales tr");
+
+		tr.hover(
+			function(){
+				var self=jQuery(this);
+
+				
+				var td_delete=self.children('td.delete');
+				if (td_delete.find('i.glyphicon-trash').length==0)
+					td_delete.append("<i class='glyphicon glyphicon-trash' style='cursor:pointer'></i>");
+
+				td_delete.unbind();
+				td_delete.click(function(){
+					var orderlist_id=jQuery(this).parent('tr').attr('id');
+					var product_id=jQuery(this).parent('tr').attr('product');
+					jQuery.ajax({
+						beforeSend: function(request) { jQuery('#loading_modal').modal({'show':true, 'backdrop':false}); request.setRequestHeader("Accept", "text/javascript");},
+						type: "GET",
+						cache: false,
+						data: { 'id': orderlist_id, 'customer':'{{=customer.auth_user.id}}', 'budget':'{{=request.vars.budget}}'},
+						dataType: 'json',
+						url:'{{=URL(r=request,c="billing", f="call",args=["json","delitem"])}}',
+						success: function(data) {
+							jQuery('#loading_modal').modal('hide');
+							make_orderlist(data);
+							jQuery("tbody#productslist tr#"+ product_id).removeClass('success');
+							
+						},
+						error: function(obj,msg,thr) {
+							jQuery('#loading_modal').modal('hide');
+							console.log("error obj"+obj+" error msg"+msg+" thr "+thr);
+						}
+					});
+				});
+
+				var tr_tdedit=self.children('td.tredit');
+
+				
+				tr_tdedit.unbind();
+				tr_tdedit.bind('click',function(){
+
+					var quantity=self.children('td.quantity').html();
+					var dto=self.children('td.dto').html();
+					var lastinput=jQuery("tbody#tbodysales tr").find("input:last");
+
+					var this_id = jQuery(this).parent('tr').attr('id');
+					var last_input_id=lastinput.parent('td').parent('tr').attr('id');
+					var product_id=jQuery(this).parent('tr').attr('product');
+
+					if (lastinput.length>0) {
+						if (this_id != last_input_id) {
+							var back=lastinput.val()
+							lastinput.parent('td').html(back);
+
+						}	
+					}	
+					if (this_id!=last_input_id) {
+						var td=self.children('td.quantity').html('<input  style="width:60%;margin-bottom:0" name="quantity" type="text" value="'+ quantity+'">');
+						var tddto=self.children('td.dto').html('<input class="dto_percentage input-mini" name="dto_percentage" style="margin-bottom:0;text-align:right" type="text" value="'+ dto +'">');
+
+						jQuery(this).parent('tr').children('td.delete').html("");
+						jQuery("tbody#tbodysales tr").unbind('hover');
+						jQuery("tbody#tbodysales tr td.edit").unbind('click');
+						jQuery("tbody#tbodysales tr td.tredit").unbind('click');
+						jQuery("tbody#tbodysales tr td.delete").unbind('click');
+						jQuery('input[name="quantity"]').focus();
+						
+						jQuery('input[name="dto_percentage"], input[name="quantity"]').keypress(function(){
+							if (event.keyCode == 13){
+								senddata(self, product_id);
+							}
+						});
+					} 					
+				});
+
+		}, function () {
+
+			jQuery(this).find("i.glyphicon-pencil").remove();
+			jQuery(this).find("i.glyphicon-trash").remove();
+
+		});
+	}
+
+
+	function senddata(td_edit, product_id) {
+		
+
+		jQuery.ajax({
+			beforeSend: function(request) { jQuery('#loading_modal').modal({'show':true, 'backdrop':false}); request.setRequestHeader("Accept", "text/javascript");},
+			type: "GET",
+			cache: false,
+			data: { 'product':product_id,
+					'customer':'{{=customer.auth_user.id}}',
+					'quantity':td_edit.find("input[name='quantity']").val(),
+					'operation':'set', 
+					'budget':'{{=request.vars.budget}}'}, //no paso orderlist_id directamente para evitar peticiones mal intencionadas a mano.
+			dataType: 'json',
+			url:'{{=URL(r=request,c="billing", f="call",args=["json","item"])}}',
+			success: function(data) {
+				jQuery('#loading_modal').modal('hide');
+				console.log(data);
+				make_orderlist(data);
+				
+			},
+			error: function(obj,msg,thr) {
+				jQuery('#loading_modal').modal('hide');
+				console.log("error obj"+obj+" error msg"+msg+" thr "+thr);
+			}					
+		});
+	}
+
+
+
+	function setpayment(paymentmethod) {
+		jQuery.ajax({
+				beforeSend: function(request) { 
+					jQuery('#loading_modal').modal({'show':true, 'backdrop':false}); request.setRequestHeader("Accept", "text/javascript");
+				},
+				type: "GET",
+				cache: false,
+				data: { 'customer':'{{=customer.auth_user.id}}', 'paymentmethod':paymentmethod, 'budget':'{{=request.vars.budget}}'},
+				dataType: 'json',
+				url:'{{=URL(r=request,c="billing", f="call", args=["json","updating_paymethod"])}}',
+				success: function(data) {
+					
+					if (data["callback"]=="OK"){
+						jQuery('.flash').html('{{="Método de pago cambiado"}}').slideDown();
+					} else {
+						jQuery('.flash').html('Ocurrió un error: '+ data["callback"]).slideDown();
+					}
+					
+					jQuery('#loading_modal').modal('hide');
+				},
+				error: function(obj,msg,thr) {
+					jQuery('.flash').html('Ocurrió un error: '+ msg).slideDown();
+					jQuery('#loading_modal').modal('hide');
+				}
+			}
+		);
+
+	}
+
+</script>
+
+<style type="text/css">
+
+.selection{
+	font-weight:bold;
+	
+}
+.scrollspy-products {  
+	height: 650px;
+	overflow:auto;
+	overflow-y: auto !important;
+	overflow-x: hidden !important;
+	/*position: relative;  */
+} 
+
+</style>

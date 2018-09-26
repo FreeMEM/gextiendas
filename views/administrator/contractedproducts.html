@@ -1,0 +1,82 @@
+{{extend 'layout_grove.html'}}
+{{from invoices import Fiscal}}
+{{Fiscal(db)}}
+<div class='container content'>
+
+	<div style="min-height:400px;">
+		{{if records>0:}}
+			{{if records>=items_per_page:}}
+				<div class="pull pull-right">
+					{{=pagination}}
+				</div>
+			{{pass}}
+			<div class="pull pull-left">
+				{{="Número de contratos: %s" % records}}
+			</div>
+			<table class="table table-hover table-striped content" style="font-size:12px">
+				<thead>
+					<tr>
+						<th>{{="Nombre"}}</th>
+						<th>{{="Empresa"}}</th>
+						<th>{{="Producto"}}</th>
+						<th>{{="Cant."}}</th>
+						<th>{{="Precio"}}</th>
+						<th>{{="Period."}}</th>
+						<th>{{="Autorenove"}}</th>
+						<th>{{="Inicio"}}</th>
+						<th>{{="Renovación"}}</th>
+						<th>{{="Caducidad"}}</th>
+						<th>{{="Tienda"}}</th>
+						<th>{{="Pago"}}</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{for cp in contractedproducts:}}
+						{{
+							start=""
+							renove=""
+							expiration=""
+							if cp.contractedproducts.start:
+								start = cp.contractedproducts.start.strftime("%d/%m/%Y %H:%M")
+								pass
+							if cp.contractedproducts.renove:
+								renove = cp.contractedproducts.renove.strftime("%d/%m/%Y %H:%M")
+								pass
+							if cp.contractedproducts.expiration:
+								expiration = cp.contractedproducts.expiration.strftime("%d/%m/%Y %H:%M")
+								pass
+
+						}}
+						
+					<tr id="{{=cp.contractedproducts.id}}" style="cursor:pointer;">
+						<td width="25%">{{=cp.auth_user.first_name}}{{=cp.auth_user.last_name}}</a></td>
+						<td width="25%">{{=cp.fiscals.fiscalname}}</a></td>
+						<td width="25%">{{=cp.products.name}}</a></td>
+						<td width="1%">{{=cp.contractedproducts.quantity}}</a></td>
+						<td width="1%">{{=cp.products.price}}{{="€"}}</a></td>
+						<td width="1%">{{=cp.contractedproducts.period}}</a></td>
+						<td width="1%">{{=cp.contractedproducts.autorenove}}</a></td>
+						<td width="1%">{{=start}}</td>
+						<td width="1%">{{=renove}}</td>
+						<td width="5%">{{=expiration}}</td>
+						<td width="10%">{{=cp.shop.host}}</td>
+						<td width="5%">{{=("",cp.contractedproducts.paymentmethod)[cp.contractedproducts.paymentmethod!=None]}}</td>
+						<td></td>
+					</tr>
+				{{pass}}
+				</tbody>
+			</table>
+			{{if records>=items_per_page:}}
+				<div class="pull pull-right">
+					{{=pagination}}	
+				</div>
+			{{pass}}
+		{{else:}}
+		
+			<div class="alert alert-info">
+				{{="No hay contratos"}} 
+			</div>
+		
+		{{pass}}
+	</div>
+</div>

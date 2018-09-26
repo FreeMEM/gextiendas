@@ -1,0 +1,22 @@
+{{extend 'layout_grove.html'}}
+<div class="widewrapper pagetitle">
+    <div class="container">
+      <h1>{{="Avisos legales"}}</h1>
+  </div>
+</div>
+<section class="section" role="main">
+  <div class="container content">
+	    <ul class="grove-list">
+	    	<li>
+	    		<a href='{{=URL(request.application, "legal","termandconditions")}}' > {{="Acuerdo de Término y Condiciones de Contratación y Uso de servicios."}}</a>
+	    	</li>
+	    	<li>
+	    		<a href='{{=URL(request.application, "legal", "privacypolicy")}}' > {{="Protección de datos y política de privacidad y confidencialidad."}}</a>
+	    	</li>
+	    	<li>
+	    		<a href='{{=URL(request.application, "legal","cookies")}}' >{{="Política de Cookies."}} </a>
+	    	</li>
+	    </ul>
+    </div>
+</section>
+                

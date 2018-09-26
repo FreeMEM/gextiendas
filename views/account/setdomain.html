@@ -1,0 +1,99 @@
+{{extend 'layout_grove.html'}}
+<div class="container content">
+	<h1>Vamos a establecer la identidad de la tienda con tu nombre de dominio</h1>
+	<div class="container content">
+	    <div class="row">
+	        <section id="domain-form" class="col-md-8">
+	            {{=form.custom.begin}}
+	            {{  
+	                form.element('input',_name='domain')['_class']="form-control input-lg"
+	                form.element('input',_name='domain')['_placeholder']="ejemplo: gextiendas.es"
+	                form.element('input',_name='host')['_class']="form-control input-lg"
+	                form.element('input',_name='host')['_placeholder']="ejemplo: www"
+	                form.element('input',_type='submit')['_class']="btn btn-grove-one btn-lg btn-bold pull-right"
+	            }}
+	            
+	            	<div class="row">
+	            		<div class="col-sm-4 form-group">
+							<label for="host">{{="Host"}} <span class="glyphicon glyphicon-question-sign hosthelp"></span></label>                    
+							{{=form.custom.widget.host}}
+						</div>
+						<div class="col-sm-8 form-group">
+							<label for="name">Dominio <span class="glyphicon glyphicon-question-sign domainhelp"></span> </label>
+							{{=form.custom.widget.domain}}
+						</div>
+					</div>
+	                
+	            	{{=form.custom.submit}}
+
+	            {{=form.custom.end}}	
+
+	        </section>
+
+	        <section id="contact-details" class="col-md-4">
+	            <div class="detail-block">
+	                <h3>¿Qué va a ocurrir?</h3>
+	                <p>
+	                	{{=XML('Vamos a establecer tu nombre dominio a tu tienda. No olvides en tu configuración de DNS de servidor, apuntar tanto el dominio como el host.domain a la IP: <strong>%s</strong> Recuerda que para habilitar tu propia identidad de dominio, debes seleccionar un plan superior al gratuito, por ejemplo "Paga si vendes" o "Tarifa plana".' % ip)}}
+	                </p>
+	            </div>
+	            
+	            <div class="detail-block">
+	                <h3>Para más información</h3>
+	                <div class="info-block">
+	                    <i class="glyphicons e-mail"><i></i></i>
+	                    <div class="info">
+	                        <h5>Contacta con nosotros</h5>
+	                        <p><a href="{{=URL('contactus','index')}}">En el panel de contacto</a></p>
+	                    </div>                 
+	                </div>
+	            </div>
+
+	        </section>
+
+	    </div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+	jQuery(document).ready(function(){
+		var alldomain=jQuery('input[name="domain"], .domainhelp');
+		var allredirect=jQuery('input[name="host"], .hosthelp');
+
+		alldomain.popover({placement : 'bottom',
+										title : 'Nombre de dominio',
+										content : 'Dinos el nombre del dominio. El nombre de dominio es por ejemplo domain.com, pero no www.domain.com. Si pones "www" hazlo en el campo destinado a host'});
+		
+		allredirect.popover({placement : 'bottom',
+										title : 'Nombre de host',
+										content : 'Se acostumbra a poner "www" como nombre de host delante del dominio. Como nos gusta cuidar  del SEO, con este dato vamos a hacer una redirección permanente tipo 301 de su dominio a su nombre de host, por si alguien escribe como URL solamente su nombre de dominio. De este modo se evitan penalizaciones por duplicidad de contenido, porque para los buscadores, nombredominio.es y www.nombredominio.es son sitios diferentes.'});
+	
+		alldomain.hover(
+            function(){
+                jQuery(this).popover('show');
+            }, function() {
+                jQuery(this).popover('hide');               
+            }
+        );
+        alldomain.on('click', function(){
+            jQuery(this).popover('hide');
+        }); 
+
+        allredirect.hover(
+            function(){
+                jQuery(this).popover('show');
+            }, function() {
+                jQuery(this).popover('hide');               
+            }
+        );
+        allredirect.on('click', function(){
+            jQuery(this).popover('hide');
+        }); 
+
+	});
+
+        
+
+
+</script>

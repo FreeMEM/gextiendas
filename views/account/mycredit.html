@@ -1,0 +1,88 @@
+{{extend 'layout_grove.html'}}
+<div class="container content">
+	<div class="well">
+		<h1>Crédito acumulado: <small>
+		{{if creditaccount:}}
+			{{=creditaccount.balance}}{{="€"}}
+		{{else:}}
+			{{="0.00€"}}
+		{{pass}}
+		</small></h1>
+
+	</div>
+	<div class="row">
+		<div class="col-lg-4">
+			<h1>Facturas</h1>
+			{{if invoices:}}
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th width="30%">Fecha</th>
+							<th width="40%">{{="Número"}}</th>
+							<th width="30%" style="text-align:right">Total</th>
+						</tr>
+					</thead>
+
+					<tbody>
+				
+						{{for invoice in invoices:}}
+							<tr>
+								<td>{{=invoice.created_at.strftime("%d-%m-%Y")}}</td>
+								<td>
+									{{=A(invoice.invoice_number, _href=URL(request.application, 'account', 'viewinvoice', args=[invoice.invoice_number]))}}
+								</td>
+								<td style="text-align:right">{{=invoice.total}}</td>				
+							</tr>
+						{{pass}}
+					
+					</tbody>
+				</table>
+			{{else:}}
+				<div class="alert alert-info">No hay registros </div>
+			{{pass}}
+		</div>
+		<div class="col-lg-8">
+			<h1>Movimientos cuenta crédito</h1>
+			{{if accountingentries:}}
+				<table class="table table-hover table-striped">
+					<thead>
+						<tr>
+							<th width="20%">Fecha</th>
+							<th width="20%">Factura</th>
+							<th width="40%">Concepto</th>
+							<th width="10%" style="text-align:right">Total</th>
+							<th width="10%" style="text-align:right">Saldo</th>
+						</tr>
+					</thead>
+
+					<tbody>
+				
+						{{for accounting in accountingentries:}}
+							{{
+								invoice_number=""
+								if accounting.invoices:
+									invoice_number=accounting.invoices.invoice_number
+									pass
+
+							}}
+							<tr>
+								<td>{{=accounting.accountingentries.annotated_at.strftime("%d-%m-%Y %H:%M")}}</td>
+								{{if invoice_number!="":}}
+									<td>{{=A(invoice_number, _href=URL(request.application, 'account', 'viewinvoice', args=[invoice_number]))}}</td>
+								{{else:}}
+									<td>{{=invoice_number}}</td>
+								{{pass}}
+								<td>{{=accounting.products.name}}</td>
+								<td style="text-align:right">{{=accounting.accountingentries.total}}</td>
+								<td style="text-align:right">{{=accounting.accountingentries.balance}}</td>
+							</tr>
+						{{pass}}
+					
+					</tbody>
+				</table>
+			{{else:}}
+				<div class="alert alert-info">No hay registros </div>
+			{{pass}}
+		</div>
+
+</div>

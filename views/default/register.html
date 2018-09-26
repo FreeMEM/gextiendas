@@ -1,0 +1,51 @@
+{{extend 'layout_grove.html'}}
+<div class="widewrapper">
+    <div class="container login">
+         
+        <h2>Crea tu cuenta</h2>
+        <p>
+            Si ya tienes cuenta, entra <a href="{{=URL('default', 'user',args='login')}}"> en ella</a> y genera tu nuevo <a href="{{=URL('products','index')}}">servicio</a> y si no recuerdas tu clave, {{=A('recupérala', _href=URL('default', 'user', args='request_reset_password'))}}
+        </p>
+        {{=form.custom.begin}}
+            {{  
+                form.element('input',_name='email')['_class']="form-control input-lg"
+                form.element('input',_name='password')['_class']="form-control input-lg"
+                form.element('input',_type='submit')['_class']="btn btn-grove-one btn-lg btn-bold pull-right"
+                #form.element('input',_type='submit')['_value']="Crear"
+                form.element('input',_name='password_two')['_class']="form-control input-lg"
+            }}
+            
+                <div class="row">
+                    <div class="col-sm-4 form-group">
+                        <label for="email">Email</label>
+                        <!-- <input class="form-control input-lg" type="email" id="email" name="email" value="" placeholder=""> -->
+                        {{=form.custom.widget.email}}
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label for="password">Password</label>
+                        <!-- <input class="form-control input-lg" type="password" id="password"  name="password" value="" placeholder=""> -->
+                        {{=form.custom.widget.password}}
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label for="password-repeat">Confirm Password</label>
+                        <!-- <input class="form-control input-lg" type="password" id="password-repeat" name="password-repeat" value="" placeholder=""> -->
+                        {{=form.custom.widget.password_two}}
+                    </div>
+                </div>
+
+                {{=form.custom.submit}}
+                <div class="clearfix"></div>
+            
+        {{=form.custom.end}}
+    </div>
+</div>
+
+
+<script language="javascript">
+    jQuery("#web2py_user_form input:visible:enabled:first").focus();
+    {{#if request.args(0)=='register':}}
+        web2py_validate_entropy(jQuery('#auth_user_password'),100);
+    {{#elif request.args(0)=='change_password':}}
+        /*web2py_validate_entropy(jQuery('#no_table_new_password'),100);*/
+    {{pass}}
+</script>

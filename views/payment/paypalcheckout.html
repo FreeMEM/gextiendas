@@ -1,0 +1,31 @@
+{{extend 'layout_grove.html'}}
+<div class="container content">
+	<div class="hero-unit">
+		<h3>Resumen</h3>
+		<div class="well">
+			<dl class="dl-horizontal">
+				<dt>Identificador:</dt>
+				<dd>{{=order.orders.payment_code.code}}</dd>
+				<dt>Precio</dt>
+				<dd><span class="badge badge-info">{{="%.2f" % (float(order.orders.total) + float(order.orders.totaltax))}} {{="€"}}</span> Iva incluido</dd>
+				<dt>Realizado el</dt>
+				<dd>{{=order.orders.ordered_at.strftime("%d-%m-%Y %H:%M")}}</dd>
+			</dl>
+			<dl class="dl-horizontal">
+
+				<dt>
+					<a href="{{=URL(r=request, c='account', f='index')}}" type='button' class='btn btn-default' style="margin-top:8px">{{="Cancelar"}}</a>
+				</dt>
+				<dd>
+					<form action="https://www.sandbox.paypal.com/cgi-bin/webscr"
+					method="post">
+						<input type="image" src="https://www.paypalobjects.com/es_ES/ES/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal. La forma rápida y segura de pagar en Internet.">
+						<img alt="" border="0" src="https://www.paypalobjects.com/es_ES/i/scr/pixel.gif" width="1" height="1">
+						<input type="hidden" name="cmd" value="_s-xclick">
+						<input type="hidden" name="encrypted" value="{{=encattrs}}" class="unform"/>
+					</form>
+				</dd>
+			</dl>
+		</div>
+	</div>
+</div>

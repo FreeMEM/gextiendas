@@ -1,0 +1,58 @@
+{{extend 'layout_grove.html'}}
+
+<div class='container content'>
+
+	<div style="min-height:400px;">
+		{{if records>0:}}
+			{{if records>=items_per_page:}}
+				<div class="pull pull-right">
+					{{=pagination}}
+				</div>
+			{{pass}}
+			<div class="pull pull-left">
+				<span>{{="Número de registros: %s " % records}} </span><span>{{=" Suscritos a noticias: %s" % actives}}</span>
+			</div>
+			<table class="table table-hover table-striped" style="font-size:12px">
+				<thead>
+					<tr>
+						<th>{{="Nombre"}}</th>
+						<th>{{="Email"}}</th>
+						<th>{{="Website"}}</th>
+						<th>{{="Teléfono"}}</th>
+						<th>{{="Población"}}</th>
+						<th>{{="Provincia"}}</th>
+						<th align="right" style="text-align:right">{{="Suscrito"}}</th>
+						<th>{{="Fecha creación"}}</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{for subs in subscriptions:}}
+					<tr id="{{=subs.id}}">
+						<td width="20%">{{=("-",subs.name)[subs.name!=None]}}</td>
+						<td width="20%">{{=subs.email}}</td>
+						<td width="20%">{{=("-",subs.website)[subs.website!=None]}}</td>
+						<td width="10%">{{=("-",subs.phone)[subs.phone!=None]}}</td>
+						<td width="1%">{{=("-",subs.city)[subs.city!=None]}}</td>
+						<td width="1%">{{=("-",subs.province)[subs.province!=None]}}</td>
+						<td width="1%" align="right" style="text-align:right">{{=(XML('<i class="glyphicon glyphicon-ok"></i>'), '')[subs.news!=True]}}</td>
+						<td width="15%">{{=subs.created_on}}</td>
+					</tr>
+				{{pass}}
+				</tbody>
+			</table>
+			{{if records>=items_per_page:}}
+				<div class="pull pull-right">
+					{{=pagination}}	
+				</div>
+			{{pass}}
+		{{else:}}
+		
+			<div class="alert alert-info">
+				{{="Todavía no hay nadie suscrito"}} 
+			</div>
+		
+		{{pass}}
+	</div>
+</div>
+
+

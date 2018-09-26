@@ -1,0 +1,120 @@
+ {{extend 'layout_grove.html'}}
+
+ <div class="widewrapper">
+        <div class="container">
+
+            <!-- Imporant note: Product comparison needs js/comparison.js to work on small devices -->
+            <div class="product-comparison" style="margin-top:0">
+                <div class="row">
+                {{if request.env.http_referer:}}
+                    {{if request.env.http_referer.find('account')!=-1:}}
+                        {{if request.vars.host:}}
+                            <h1>Elige un plan para habilitar dominios</h1>
+                        {{pass}}
+                    {{pass}}       
+                {{pass}}             
+                    <div class="col-sm-6 pricing-plan">
+                        <div class="head">
+                            {{="Paga si vendes"}}
+                        </div>
+                        <div  style="background-color:#f0ad4e; padding:2px; cursor:pointer;" class="ifselling"><h5 style="color:white;">2€/venta, 40€ máximo al mes</h5></div>
+                        
+                        <ul class="details">
+                            <li class="price">{{="0€"}}<span class="small">/mes</span></li>
+                            <li class="unlimit_functions"><strong>Sin límites</strong> de funcionalidad</li>
+                            <li class="unlimit_products">{{=XML("<strong>Sin límite</strong> de artículos")}}</li>
+                            <li class="anual_ssl"> Certificado SSL <strong>de dominio *</strong> </li>
+                            <li class="multishops"><strong>{{="Múltiples tiendas de desarrollo"}}</strong></li>
+                            <li class="domain">Usa tu propio dominio</li>
+                            <li class="domain">Multitienda/Multidominio</li>
+                            <li>{{=" - "}}</li>
+                            <li> {{="Más de 50 plantillas configurables"}} </li>
+
+                            <li class="buy"><a href="{{=URL('contractplan', vars=dict(host=host, plan=2))}}" class="btn btn-grove-one btn-xlg btn-bold">Contratar</a></li>
+                        </ul>
+                    </div>
+                     <div class="col-sm-6 pricing-plan">
+                        <div class="head height-fix alternative">
+                            Tarifa plana 
+                            <div class="ribbon">POPULAR</div>
+                        </div>
+                        
+                         <div  style="background-color:#428bca; padding:2px; cursor:pointer;" class="flatplan"><h5 style="color:white;">Para los que van en serio </h5></div>
+                        
+                        <ul class="details">
+                            <li class="price">{{="18€"}}<span class="small">/mes</span></li>
+                            <li class="unlimit_functions"><strong>Sin límites</strong> de funcionalidad</li>
+                            <li class="unlimit_products">{{=XML("<strong>Sin límite</strong> de artículos")}}</li>
+                            <li class="unlimit_ssl"><strong>Certificado SSL gratis</strong></li>
+                            <li class="multishops"><strong>{{="Múltiples tiendas de desarrollo"}}</strong></li>
+                            <li class="domain">Usa tu propio dominio</li>
+                            <li class="domain">Multitienda/Multidominio</li>
+                            <li class="seo"><strong>{{="Asistencia técnica"}}</strong></li>
+                            <li class="ticket_support"> {{="Más de 50 plantillas configurables"}} </li>
+                            <li class="buy"><a href="{{=URL('contractplan', vars=dict(host=host, plan=3))}}" class="btn btn-grove-two btn-xlg btn-bold">Contratar</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div class="disclaimer clearfix">
+                    <a class="glyphicons pushpin" href=""><i></i></a>
+                    <div class="text">
+                        {{=XML("Los precios <strong>no incluyen IVA</strong>. Aceptamos tarjeta mediante <strong>Paypal</strong> y <strong>transferencia/domiciliación bancaria</strong> (pago bancario sólo para Europa).")}}
+                    </div>
+                </div>
+
+             </div>
+        </div>
+    </div>
+
+             
+
+
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        
+
+        var allvars=jQuery('li.unlimit_functions, li.unlimit_products, li.wildcard_ssl, li.to_ten, li.unlimit_ssl, li.multishops, li.domain, li.seo, li.anual_ssl, li.ticket_support, div.flatplan, div.ifselling');
+
+        jQuery('li.unlimit_functions').popover({ placement : 'bottom',
+                                                 title: '{{="Más de 300 funcionalidades!"}}',
+                                                 content: '{{="Innumerables funcionalidades para tus tiendas. Productos descargables, como videos, música o libros, ventas cruzadas, funciones de integración con Ebay, comparativas de productos, zoom de productos y un largo etc que mejorará la experiencia a tus clientes."}}'});
+        jQuery('li.unlimit_products').popover({ placement : 'top',           
+                                                content : '{{="Si tu catálogo es numeroso ¿por qué motivo tendríamos que limitarte? Lo único que queremos es que vendas. Siéntete libre."}}'});
+        jQuery('li.wildcard_ssl').popover({ placement : 'top',           
+                                            content : '{{="Para que tus clientes hagan sus transacciones de forma segura, usa nuestro identidad wildcard *.gextiendas.es. Cuando estés preparado, cámbiate de plan y utiliza tu propia identidad."}}'});
+        jQuery('li.to_ten').popover({ placement : 'top',           
+                                      content : '{{="Crea y gestiona de forma gratuita hasta 10 instancias de tienda. Podrás hacer cuantas pruebas necesites hasta que decidas dar el paso a un plan más profesional"}}'});
+        jQuery('li.anual_ssl').popover({ placement : 'top',           
+                                         content : '{{=XML("Por 10€ anuales te gestionamos el certificado digital para que asegures las transacciones de tus clientes. Cuando decidas subir de plan, te lo reembolsaremos y lo mantendremos gratis mientras sigas con nuestros planes por suscripción")}}'});
+        jQuery('li.unlimit_ssl').popover({ placement : 'top',           
+                                            content : 'Te regalamos y gestionamos mientras estés con nuestros planes por suscripción, el certificado SSL con la identidad de tu dominio, para que tus clientes realicen sus transacciones de forma segura'});
+        jQuery('li.multishops').popover({ placement : 'top',           
+                                          content : 'Queremos ayudarte a trabajar de un modo profesional. Crea y gestiona de forma gratuita las instancias de tiendas que necesites. Podrás crear cuantos entornos de preproducción y desarrollo como necesites, para que no tengas que hacer tus pruebas directamente en producción.'});
+        jQuery('li.domain').popover({ placement : 'top',           
+                                      content : 'Dale a tu tienda su propia identidad usando tus propios dominios'});
+
+        jQuery('div.flatplan').popover({placement:'bottom',
+                                         content:'Controla tu gasto mensual y vende lo que quieras. Además te regalamos y gestionamos por tí, para que te olvides de burocracias y problemas técnicos innecesarios, el certificado digital que permite las transacciones seguras en tu tienda.  Además, te asistimos gratuitamente en el manejo de tu tienda, para que no te canses y ocupes tiempo en buscar información por la red.'});
+        jQuery('div.ifselling').popover({placement:'bottom',
+                                         title:'Para comenzar sin sustos',
+                                         content:'Nuestro compromiso es que si no vendes, no pagas y cuando comiences a despegar, te cobraremos 2€ por venta. Pero no te preocupes, que podrás vender lo que quieras con un gasto limitado a 40€ al mes. Y si un mes quieres cambiar a un plan de tarifa plana, te devolveremos la diferencia y te reembolsamos los gastos de gestión del certificado digital del año en curso.'});
+        
+        allvars.hover(
+            function(){
+                jQuery(this).popover('show');
+            }, function() {
+                jQuery(this).popover('hide');               
+            }
+        );
+        allvars.click(function(){
+            jQuery(this).popover('hide');
+        }); 
+    });
+
+
+
+</script>

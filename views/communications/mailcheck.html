@@ -1,0 +1,27 @@
+{{extend 'layout_grove.html'}}
+<div class="container">
+	<div class="jumbotron">    
+		<div class="feature">
+			{{if action=="confirm":}}
+			{{=XML("""
+				<h1>Enhorabuena</h1>
+				<p>Has confirmado tu correo electrónico. Te iremos informando periódicamente de todas las novedades que tengamos</p>
+
+				<p><strong>Estamos de prelanzamiento</strong></p>
+
+				<p>Como ya sabes, estamos a punto de poner en marcha nuestro sistema de gestión de tiendas electrónicas. Podrás crear y mantener gratuitamente cuantas tiendas electrónicas quieras. Si más adelante necesitas servicios profesionales, cuenta con nosotros a precios <strong>más ventajosos</strong> por el simple hecho de haber formado parte del proceso de prelanzamiento.</p>
+
+				<p>Esperamos que con nosotros, ganes mucho.</p>
+				""")}}
+				
+			{{elif action=="refuse":}}
+				<h1>Lo sentimos</h1>
+				<p>Te hemos dado de baja de nuestra base de datos</p>
+			{{elif action=="error":}}
+				<h1>Error</h1>
+				<p>{{="Ha ocurrido algún error con la petición que nos has enviado"}}</p>
+				<p>Si lo deseas, <a href="{{=URL(request.application,'contactus','index')}}">ponte en contacto</a> con nosotros para avisarnos y solucionar el problema</p>
+			{{pass}}
+		</div>
+	</div>
+</div>

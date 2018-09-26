@@ -1,0 +1,337 @@
+{{extend 'layout_grove.html'}}
+
+
+<div class="container" role="main">
+	<div class="row content">
+		<div class="col-sm-8">
+			<section id="blog-posts">
+				<article class="blog-post">
+					<header>
+						<h1 class="title"><a href="{{=URL(request.application, 'blog','show', args=post.urlfriendly)}}">{{=post.title}}</a></h1>
+						<div class="comment-count pull pull-right">
+							<a href="{{=URL(request.application, 'blog','show', args=post.id)}}#comments">
+								<span>{{=db(db.comments.blog==post.id).count()}} {{=T('Comments')}}</span>
+								<i class="glyphicons conversation"><i></i></i>
+							</a>
+						</div>   
+						<h2 class="subtitle" style="margin-top:0"><a href="{{=URL(request.application, 'blog','show', args=post.urlfriendly)}}">{{=post.subtitle}}</a></h2>
+
+						<div class="clearfix"></div>
+					</header>
+					{{if images!=None:}}
+						
+						<img class="leadimage img-responsive" src="{{=URL(request.application, 'blog', 'download',args=images.image)}}" alt="Blog Picture">
+					{{pass}}
+
+					<div class="meta">
+						<small>
+							<i class="glyphicon glyphicon-calendar"></i><span> Creado por {{=post.user.first_name}} {{=post.user.last_name}} el {{=post.created_on.strftime("%d-%m-%Y  %H:%M")}}, </span>
+							<span>{{=prettydate(post.created_on,T)}} </span>
+
+							{{if auth.has_membership('administradores') or auth.has_membership('superadministradores'):}}
+								<i class="verticalSeparator"></i>|
+								{{if session.preview:}}
+										<a href="{{=URL('blog','edit', vars=dict(draft=post.id, blog=None))}}" class="btn"><i class="glyphicon glyphicon-pencil"></i></a>
+									{{else:}}
+									<a href="{{=URL('blog','edit', vars=dict(draft=None, blog=post.id))}}" class="btn"><i class="glyphicon glyphicon-pencil"></i></a>
+									<a href="#modalremove" class="btn" data-toggle="modal"><i class="glyphicon glyphicon-remove"></i></a>
+									{{pass}}
+
+									<a href="{{=URL('administrator','bloglist')}}" class="btn"><i class="glyphicon glyphicon-list"></i></a>
+							{{pass}}
+						</small>
+					</div>
+					<!-- Lockerz Share BEGIN -->
+
+					<div class="a2a_kit a2a_default_style">
+						<a class="a2a_dd" href="http://www.addtoany.com/share_save">Compartir</a>
+						<span class="a2a_divider"></span>
+						<a class="a2a_button_linkedin"></a>
+						<a class="a2a_button_facebook"></a>
+						<a class="a2a_button_twitter"></a>
+						<a class="a2a_button_google_plus"></a>
+						<a class="a2a_button_email"></a>
+					</div>
+					<script type="text/javascript" src="{{=URL('static','js/page.js')}}"></script>
+					<!-- Lockerz Share END -->
+					<div style="font-size: 14px; margin-top:10px;">
+						{{
+							=XML(post.post, sanitize=True,
+							permitted_tags=['a', 'b', 'blockquote', 'br/', 'i', 'li',
+							'ol', 'ul', 'p', 'cite', 'code', 'pre', 'img/', 'span', 'strong', 'u', 'i', 'h1','h2','h3','h4','h5','h6', 'table','tr','td','th','tbody','thead','div','iframe','object','param','param/','param /','embed','embed/','em','/em'],
+							allowed_attributes={'a':['href', 'title'],
+												'img':['src', 'alt', 'style'], 'blockquote':['type'], 'span':['style'],
+												'iframe':['class', 'width', 'height', 'src', 'webkitallowfullscreen', 'mozallowfullscreen', 'allowfullscreen', 'frameborder'],
+												'object':['classid','codebase','height','hspace', 'vspace','width','style'],
+												'param':['name', 'value'],
+												'embed':['height','hspace','pluginspage','quality','src','vspace','width','allowscriptaccess','allowfullscreen','type'],
+												'div':['class'],
+												'p':['class']
+												}
+								)
+			   			}}
+					</div>
+
+				</article>
+			</section>
+
+			<hr>
+
+		{{if session.preview==False:}}
+
+			<aside id="comments">
+			    <section id="existing-comments">
+			        <h3>Comentarios</h3>
+			        {{	
+			        	if request.args(0).isdigit():
+			        		comments=db((db.comments.public==True) & (db.comments.blog==request.args(0))).select(db.comments.ALL)
+			        	else:
+			        		id=db(db.blog.urlfriendly==request.args(0)).select().first()['id']
+			        		comments=db((db.comments.public==True) & (db.comments.blog==id)).select(db.comments.ALL)
+			        	pass
+						ncomments=len(comments)
+					}}
+					{{if len(comments)>0:}}
+						{{for comment in comments:}}
+			        		<div class="comment" idcomment="{{=comment.id}}">
+								<img src="{{=URL('static','/img/avatar-ar.jpeg')}}" alt="Avatar" class="avatar">
+								<div class="content">
+									<span class="author">
+										{{if comment.regnews:}}
+											{{=comment.regnews.name}}
+										{{else:}}
+											{{=comment.user.first_name}} {{=comment.user.last_name}} 
+										{{pass}}					
+									</span>
+									<span class="meta">{{=comment.created_on.strftime("%d-%m-%Y %H:%M")}}</span>
+									<span class="text">
+									    {{=comment.comment}}
+									</span>
+								</div>
+							</div>
+						{{pass}}
+					{{pass}}
+				</section>
+				<hr>
+				<section class="reply">
+					<h3>Deja tu comentario</h3>
+					{{if auth.is_logged_in():}}
+			
+						{{form.element('textarea')['_class']='form-control'}}
+						{{=form}}
+					{{else:}}
+						{{form.custom.begin}}
+
+						<form action="" id="reply" accept-charset="utf-8" enctype="multipart/form-data" method="post" class="clearfix">
+							<fieldset>
+							<div class="row">
+								<div class="col-md-12 form-group">
+									{{url="%s#dejacomentario"%URL('default', 'user', args='login', vars=dict(_next=URL(args=request.args, vars=request.vars)))}}
+									{{=A(XML('<i class="icon-user"></i> Inicia sesión</i>'), _href=url)}}
+
+									{{=" o completa todos los datos "}}
+									<span class="help-inline"></span>
+								</div>
+								<div class="col-md-6 form-group">
+									<label for="name">Name</label>
+									{{form.custom.widget.name['_class']='form-control input-lg'}}
+									{{=form.custom.widget.name}}
+									
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 form-group">
+									<label for="email">Email</label>
+									{{form.custom.widget.email['_class']='form-control input-lg'}}
+									{{=form.custom.widget.email}}
+								</div>
+								<div class="col-md-6 form-group">
+									<label for="email">Website</label>
+									{{form.custom.widget.website['_class']='form-control input-lg'}}
+									{{=form.custom.widget.website}}
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="" for="message">Comment</label>
+								{{form.custom.widget.comment['_class']='form-control'}}
+								
+								{{=form.custom.widget.comment}}
+							</div>
+							<div class="control-group">
+								<label class="control-label" for="no_table_rnews" id="no_table_rnews__label"></label>
+								<div class="controls">	
+									{{form.custom.widget.rnews['_type']='checkbox'}}
+									{{form.custom.widget.rnews['_checked']=True}}
+									{{=form.custom.widget.rnews}}
+									<span class="help-inline">Quiero recibir noticias de gextiendas.es</span>
+								</div>
+							</div>					
+							<div class="control-group">
+								<label class="control-label" for="no_table_comment" id="no_table_comment__label"></label>
+								<div class="controls">
+
+									{{=form[0][6]}}
+									<span class="help-inline"></span>
+								</div>
+							</div>
+							<input class="btn btn-grove-one btn-lg btn-bold" type="submit" value="Comentar">
+							</fieldset>	
+						{{=form.hidden_fields()}}
+						</form>
+
+					{{form.custom.end}}
+					{{pass}}
+				</section>
+			</aside>
+		</div>
+		<aside class="col-sm-4 blog-sidecolumn">
+
+				{{if auth.has_membership('administradores') or auth.has_membership('superadministradores'):}}
+				<div class="widget">
+					<div class="btn btn-group pull-right">
+					  <a href="{{=URL('blog','new')}}" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> {{="Nueva publicación"}}</a>
+					  <a href="{{=URL('administrator','bloglist')}}" class="btn btn-default"><i class="glyphicon glyphicon-list"></i></a>
+					</div>
+					
+					<div class="clearfix"></div>
+				</div>	
+				{{pass}}
+				
+				
+				<div class="widget">
+					{{if lastposts:}} 
+					<h3>{{="Últimas publicaciones"}}</h3>
+					<ul class="grove-list">
+						{{for post in lastposts:}}
+							<li>
+							{{=A(XML('<h4 class="list-group-item-heading">%s</h4><p class="list-group-item-text">%s </p><p><small>%s</small></p>' %(post.title, post.subtitle, prettydate(post.created_on,T))), _href=URL(request.application, 'blog','show', args=post.id), _class="list-grop-item")}}
+							</li>	
+						{{pass}}
+					</ul>
+					{{else:}}
+						{{="No hay publicaciones"}}
+					{{pass}}
+		        </div>
+        </aside>
+
+	{{pass}}
+
+	</div>
+</div>
+<div id="modalremove" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">×</button>
+				<h3>Confirmación de borrado</h3>
+			</div>
+
+	  		<div class="modal-body">
+    			<p>El borrado será permanente, ¿está seguro de querer eliminar la publicación?</p>
+  			</div>
+  			<div class="modal-footer">
+    			<button class="btn btn-inverse" data-dismiss="modal">Cancelar</button>
+    			<button class="btn btn-primary" id="remove">Borrar</button>
+  			</div>
+		</div>
+	</div>
+</div>
+<div id="commentremove" class="modal fade"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal">×</button>
+				<h3>Confirmación de borrado</h3>
+			</div>
+
+	  		<div class="modal-body">
+    			<p>El borrado será permanente, ¿está seguro de querer eliminar el comentario?</p>
+  			</div>
+  			<div class="modal-footer">
+    			<button class="btn btn-inverse" data-dismiss="modal">Cancelar</button>
+    			<button class="btn btn-primary" id="commentremove">Borrar</button>
+  			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+var url="";
+jQuery('.link').click(function(){
+	window.location="{{=URL(request.application, 'blog','show', args=post.id)}}";
+});
+
+function fixFlash() {
+    $('object').each(function(){
+		$(this).find('embed').attr('wmode','transparent');
+		if($(this).find('param[name=wmode]').attr('value') != 'transparent') {
+			$(this).prepend('<param name="wmode" value="transparent" />');
+		}
+		temp_var = $(this).parent().html();
+		$(this).parent().html(temp_var);
+    });
+}
+	
+jQuery(document).ready(function () {
+	jQuery('iframe').each(function(){
+		var url = jQuery(this).attr("src");
+		jQuery(this).attr("src",url+"?wmode=transparent");
+	});
+
+	fixFlash();
+
+	jQuery('div#modalremove').modal('hide');
+
+
+ 	jQuery('button#remove').click(function(){
+	    jQuery.ajax({
+	      beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+	      type: "POST",
+	      cache: false,
+	      dataType: 'text',
+	      url: "{{=URL('blog','delete/%s'%post.id)}}",
+	      success: function(result) {
+	        if (result=="OK") {
+				window.location = "{{=URL('administrator','bloglist')}}";
+	        } else {
+	        	jQuery('div#modalremove').modal('hide');	
+	        	jQuery('.flash').html('Ocurrió un error y no se pudo borrar el post').slideDown();
+	        }
+	      },
+	      error: function(obj,msg,thr) {
+	        jQuery('.flash').html("error obj:  "+obj+" error msg:  "+msg+" thr:  "+thr).slideDown();
+	      }
+	    });
+  	});
+});
+
+	
+
+jQuery('i.glyphicon-remove').click(function(){
+	url="{{=URL('blog','deletecomment')}}/"+jQuery(this).parent('a').parent('td').parent('tr').attr('id');
+});
+jQuery('button#commentremove').click(function(){
+	jQuery.ajax({
+		beforeSend: function(request) { request.setRequestHeader("Accept", "text/javascript");},
+		type: "POST",
+		cache: false,
+		dataType: 'text',
+		url: url,
+		success: function(result) {
+			if (result=="OK") {
+				jQuery('div#commentremove').modal('hide');
+				jQuery()
+			} else {
+				jQuery('div#modalremove').modal('hide');	
+				jQuery('.flash').html('Ocurrió un error y no se pudo borrar el post').slideDown('slow', function(){jQuery(this).delay(2000).slideUp()});
+			}
+		},
+		error: function(obj,msg,thr) {
+			jQuery('.flash').html("error obj:  "+obj+" error msg:  "+msg+" thr:  "+thr).slideDown();
+		}
+	});
+});
+
+
+</script>

@@ -1,0 +1,116 @@
+{{extend 'layout_grove.html'}}
+
+
+<div class="widewrapper pagetitle">
+    <div class="container">
+      <h1>{{="Creadores de tecnología"}}</h1>
+  </div>
+</div>
+
+    
+<div class="container content">
+    <div class="row">
+        <div class="col-sm-12">           
+            <h3>Quienes somos</h3>
+
+                
+                {{=XML("""
+                        
+                        <p>Gextiendas es un proyecto de <a href='http://www.gestionexperta.com'  target='_blank'>Gestión Experta de Sistemas Computacionales S.L</a>, una pequeña nueva empresa fundada en el 2012 especializada en el desarrollo de aplicaciones y sistemas cloud computing para la gestión empresarial. Teníamos muy buena experiencia creando tiendas online con <a href="http://www.prestashop.com" target='_blank'>Prestashop</a> y <a href="http://magento.com" target="_blank">Magento</a>, pero nos ocupaba demasiado tiempo la instalación, configuración y mantenimiento de los sistemas que sustentan las tiendas. Así que decidimos desarrollar una herramienta que nos facilitase el trabajo y que aumentase la calidad del servicio; algo que nos permitiese centrarnos en lo más importante, hacer que las tiendas de nuestros clientes vendiesen. Y de aquí surgió Gextiendas (<strong>G</strong>estión <strong>Ex</strong>perta de tiendas online), una herramienta que permite a cualquiera crear sus propias instancias de tiendas en unos pocos clicks.</p>
+
+                         <p>Nos apasiona crear tecnologías para las masas y este proyecto, nos está dando la oportunidad de ofrecer a los profesionales que quieren posicionarse, las herramientas para hacerlo. Para ello hemos diseñado y construido un sistema replicado y balanceado en un número creciente de servidores, para que la respuesta de sus servicios en internet sea siempre la mejor. Así nos aseguramos que puedas dar el mejor servicio a tus clientes.</p>
+
+                         <p>¿Y por qué no dar un paso más y ofrecer las instancias de tiendas gratis y sólo cobrar por servicios profesionales?. Esta es nuestra política.</p>
+
+                         
+                        """)}}
+            
+                
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="widewrapper weak-highlight">
+    <div class="container content">
+        <div class="showroom-controls">
+            <div class="links">El equipo humano</div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4 team-member showroom-item">
+                <div class="image">
+                    <img src="{{=URL('static','img/aboutus/freemem4_370x247.jpeg')}}" class="img-responsive" alt="Francisco Antonio Tapias Bravo">
+                    <span class="overlay">
+                         <i class="glyphicons search"><i></i></i>
+                         <div class="name">{{="Desarrollador de tecnologías SaaS sobre software libre. Python, Ruby, Javascript, NoSQL o clusters Linux son algunas de las tecnologías que domina."}}</div>
+                     </span>
+                </div>
+                <div class="description">
+                    <h4>Francisco A. Tapias analista desarrollador de sistemas</h4>
+                    <p>Es un apasionado de la programación y experto en clusters y sistemas escalables basados en software libre.</p>
+<!--                     <blockquote>
+                            "Crear tecnologías para las masas es lo que me apasiona y este proyecto, me está dando la oportunidad de ofrecer a los profesionales que <strong>quieren posicionarse</strong>, las herramientas para hacerlo."
+                    </blockquote> -->
+
+                    <div class="social">
+                        <a href="https://twitter.com/gestionexperta" class="glyphicons twitter" target="_blank"><i></i></a>
+                        <a href="http://www.linkedin.com/pub/francisco-antonio-tapias-bravo/1/206/755" target="_blank" class="glyphicons linked_in"><i></i></a>
+                        <a href="https://plus.google.com/+FranciscoTapias" target="_blank" class="glyphicons google_plus"><i></i></a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-sm-4 team-member showroom-item">
+
+                <div class="image">
+                    <img src="{{=URL('static','img/aboutus/josesolano370x247.jpg')}}" class="img-responsive" alt="Jose Antonio Solano Serrano">
+                    <span class="overlay">
+                         <i class="glyphicons search"><i></i></i>
+                         <div class="name">{{="Community Manager y SEO"}}</div>
+                     </span>
+                </div>
+                
+                <div class="description">
+                    <h4>Jose Antonio Solano, desarrollador web y experto en difusión digital</h4>
+                    <p>
+                        Community Manager, especializado en SEO, desarrollador web y experto en Prestashop, Magento y WooCommerce.
+                    </p>
+
+                    <div class="social">
+                        <a href="https://twitter.com/solanoserrano" class="glyphicons twitter" target="_blank"><i></i></a>
+                        <a href="http://es.linkedin.com/pub/jos%C3%A9-antonio-solano-serrano/18/939/773" target="_blank" class="glyphicons linked_in"><i></i></a>
+                        <a href="https://plus.google.com/+JoseAntonioSolano" target="_blank" class="glyphicons google_plus"><i></i></a>
+                    </div>                    
+                </div>
+            </div>
+
+            <div class="col-sm-4 team-member showroom-item">
+                <div class="image">
+                    <img src="{{=URL('static','img/aboutus/miriam_370x247.jpeg')}}" class="img-responsive" alt="Miriam Espinar">
+                    <span class="overlay">
+                         <i class="glyphicons search"><i></i></i>
+                         <div class="name">{{="Abogada, perteneciente al Ilustre Colegio de Abogados de Granada, con una larga trayectoria en la Administración Pública como jurista."}}</div>
+                     </span>
+                </div>
+                
+                <div class="description">
+                    <h4>Miriam Espinar, abogada. Nuestra experta jurídica.</h4>
+                    <p>
+                        Responsable de nuestro servicio de implementación y adaptación de la LOPD y LSSI/CE de las tiendas de nuestros clientes.
+                    </p>
+                    <div class="social">
+                        <a href="http://es.linkedin.com/pub/miriam-espinar-álvarez/57/113/b83" target="_blank" class="glyphicons linked_in"><i></i></a>
+                    </div>                    
+                </div>                
+            </div>                        
+        </div>
+
+        
+    </div>
+</div>  
+    
+

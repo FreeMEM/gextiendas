@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /tuvozlegal/default/user
+Disallow: /tuvozlegal/user
+Disallow: /tuvozlegal/static
+Sitemap: https://www.gextiendas.es/sitemap.xml

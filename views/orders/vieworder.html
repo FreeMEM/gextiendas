@@ -1,0 +1,168 @@
+{{extend 'layout_grove.html'}}
+
+{{if order:}}
+<div class="container content">
+	<div class="row">
+		<div class="col-xs-9 col-md-9">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="well">
+						<h4>Datos fiscales</h4>
+						<p> {{=('%s %s' % (order.auth_user.first_name,order.auth_user.last_name), order.fiscals.fiscalname)[order.fiscals.fiscalname!=""]}}</p>
+						<p>{{=order.fiscals.tax_identification}}</p>
+						<p>{{=order.fiscals.address}}</p>
+						<p>{{=order.fiscals.postal_code}} {{=order.fiscals.city}}</p>
+						<p>{{=order.fiscals.province}} ({{=order.fiscals.country}})</p>
+						<p>{{="Teléfono: "}}{{=order.fiscals.phone}}</p>
+					</div>
+				</div>
+				<div class="col-md-6">
+					
+						<p><h1>{{="Pedido nº:"}} {{=order.orders.id}}</h1></p>
+						
+						<p><strong>  Fecha: </strong> {{=order.orders.ordered_at.strftime("%d-%m-%Y")}}</p>
+
+					
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-3 col-md-3">
+			<div class="pull">
+				<div class="pull-right"> 
+
+
+					<div class="btn-group-vertical">
+						<button class="btn btn-grove-three" onClick="printorder();" >
+							<i class="glyphicons print"><i></i></i>
+							Descargar en pdf
+						</button>
+						{{if not order.orders.invoice:}}
+							<a class="btn btn-grove-one" type="button" href="{{=URL('billing','newinvoice',args=[order.auth_user.id], vars=dict(order=order.orders.id))}}" >Crear factura</a>
+						{{pass}}
+
+						{{if (auth.has_membership('superadministradores') or auth.has_membership('administradores')) and (order.orders.manual_operation==True):}}
+							{{#if order.orders.manual_operation:}}
+							<!-- <a class="btn btn-warning" type="button" href="{{#=URL('contracts','createcontracts',args=[order.auth_user.id], vars=dict(order=order.orders.id))}}" >Generar contratos</a> -->
+							{{#pass}}
+							{{if not order.orders.invoice:}}
+							<a class="btn btn-grove-three" type="button" href="{{=URL('orders','neworder',args=[order.orders.user,order.orders.id])}}" >Modificar</a>
+							{{pass}}
+
+							{{if order.orders.confirmed_at==None and order.orders.confirm_request==None:}}
+								<a class="btn btn-info" type="button" href="{{=URL('orders','comfirmrequest',args=[order.auth_user.id], vars=dict(order=order.orders.id))}}">Solicitar confirmación</a>
+							{{elif order.orders.confirmed_at==None:}}
+								<a class="btn btn-danger" type="button" href="{{=URL('orders','comfirmorder',args=[order.auth_user.id], vars=dict(order=order.orders.id))}}">Forzar confirmación</a>
+							{{pass}}
+						{{pass}}
+						<a class="btn btn-primary" type="button" href="{{=URL('administrator','editcustomer', args=[order.auth_user.id])}}">
+						<i class="glyphicon glyphicon-user"><i></i></i> ir al cliente </a>
+
+					</div>
+					
+				</div>	
+			</div>
+
+		</div>
+	</div>
+	<div class="row">
+
+		<div class="col-md-12">
+
+
+
+			<table class="table table-hover" >
+
+				<thead>
+					<tr>
+						<th>Producto</th>
+						<th style='text-align:right'>Cantidad</th>
+						<th style='text-align:right'>Precio</th>
+
+
+						<th style='text-align:right'>total</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{for item in orderlist:}}
+						
+						<tr id="{{=item.orderlist.id}}">
+							
+							<td width='85%'>{{=item.products.name}}</td>
+							<td width='5%' class="quantity">{{=item.orderlist.quantity}}</td>
+							
+							<td width='5%' class='original_price' style='text-align:right'>
+								{{="%.2f"%float(item.orderlist.price)}}
+							</td>
+							<td width='5%' style='text-align:right' class="totalrow" total_fixer='{{="%.2f" % (float(item.orderlist.quantity) * float(item.orderlist.price)) }}'>
+								{{="%.2f" % (float(item.orderlist.quantity) * float(item.orderlist.price)) }}						
+							</td>
+						</tr>
+					{{pass}}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<dl id="desglose" class="dl-horizontal pull-right">
+				<dt >Subtotal</dt>
+				<dd id="id_subtotal" style="text-align:right;">{{="%.2f"% float(order.orders.total)}}</dd>
+			</dl>
+			<div class="clearfix"></div>
+			<dl id="desglose_iva"  class="dl-horizontal pull-right">
+			<dt> IVA {{="%.2f" % order.orders.tax}}</dt>
+			<dd> {{="%.2f" % order.orders.totaltax}}</dd>
+			</dl>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			
+			<dl id="order_total" class="dl-horizontal pull-right">
+				<dt>TOTAL PEDIDO:</dt>
+				<dd> <span></span> {{="%.2f" % (float(order.orders.total)+float(order.orders.totaltax))}}{{="€"}}</dd>
+			</dl>
+
+		</div>
+	</div>
+</div>
+
+{{else:}}
+	{{redirect(URL(request.application,'administrator','billing'))}}
+{{pass}}
+
+
+
+<script type="text/javascript">
+
+	jQuery(document).ready(function() {
+
+	
+		var taxes={}
+	
+		jQuery("tbody tr").each(function(){ 
+			
+
+
+			var tax = jQuery(this).children('td.taxes').html();
+			var number_total= Number(parseFloat(jQuery(this).children('td.totalrow').html()).toFixed(2));
+			var number_tax= (Number(parseFloat(tax).toFixed(2))* number_total/100).toFixed(2);
+
+			if (taxes[tax]) {
+				taxes[tax].content_tax.push(number_tax);
+
+			}else{
+				taxes[tax]={label_tax:tax, content_tax:[number_tax]}
+			}
+
+
+
+		}); 
+		
+	});
+
+	function printorder() {
+		window.location = "{{=URL(request.application,'orders', 'printorder', args=order.orders.id)}}";
+	}
+</script>

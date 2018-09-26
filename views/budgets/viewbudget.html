@@ -1,0 +1,155 @@
+{{extend 'layout_grove.html'}}
+
+{{if budget:}}
+<div class="container content">
+	<div class="row">
+		<div class="col-xs-9 col-md-9">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="well">
+						<h4>Datos fiscales</h4>
+						<p> {{=('%s %s' % (budget.auth_user.first_name,budget.auth_user.last_name), budget.fiscals.fiscalname)[budget.fiscals.fiscalname!=""]}}</p>
+						<p>{{=budget.fiscals.tax_identification}}</p>
+						<p>{{=budget.fiscals.address}}</p>
+						<p>{{=budget.fiscals.postal_code}} {{=budget.fiscals.city}}</p>
+						<p>{{=budget.fiscals.province}} ({{=budget.fiscals.country}})</p>
+						<p>{{="Teléfono: "}}{{=budget.fiscals.phone}}</p>
+					</div>
+				</div>
+				<div class="col-md-6">
+					
+						<p><h1>{{="Presupuesto nº:"}} {{=budget.budgets.id}}</h1></p>
+						
+						<p><strong>  Fecha: </strong> {{=budget.budgets.created_at.strftime("%d-%m-%Y")}}</p>
+
+					
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-3 col-md-3">
+			<div class="pull">
+				<div class="pull-right"> 
+
+
+					<div class="btn-group-vertical">
+						<button class="btn btn-grove-three" onClick="printbudget();" >
+							<i class="glyphicons print"><i></i></i>
+							Descargar en pdf
+						</button>
+						{{if not budget.budgets.invoice:}}
+							<a class="btn btn-grove-one" type="button" href="{{=URL('billing','newinvoice',args=[budget.auth_user.id], vars=dict(budget=budget.budgets.id))}}" >Crear factura</a>
+							<a class="btn btn-grove-two" type="button" href="{{=URL('orders','neworder',args=[budget.auth_user.id], vars=dict(budget=budget.budgets.id))}}" >Crear pedido</a>
+							<a class="btn btn-grove-three" type="button" href="{{=URL('budgets','newbudget',args=[budget.budgets.user,budget.budgets.id])}}" >Modificar</a>
+						{{pass}}
+						<a class="btn btn-primary" type="button" href="{{=URL('administrator','editcustomer', args=[budget.auth_user.id])}}">
+						<i class="glyphicon glyphicon-user"><i></i></i> ir al cliente </a>
+
+					</div>
+					
+				</div>	
+			</div>
+
+		</div>
+	</div>
+	<div class="row">
+
+		<div class="col-md-12">
+
+
+
+			<table class="table table-hover" >
+
+				<thead>
+					<tr>
+						<th>Producto</th>
+						<th style='text-align:right'>Cantidad</th>
+						<th style='text-align:right'>Precio</th>
+
+
+						<th style='text-align:right'>total</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{for item in budgetlist:}}
+						
+						<tr id="{{=item.budgetlist.id}}">
+							
+							<td width='85%'>{{=item.products.name}}</td>
+							<td width='5%' class="quantity">{{=item.budgetlist.quantity}}</td>
+							
+							<td width='5%' class='original_price' style='text-align:right'>
+								{{="%.2f"%float(item.budgetlist.price)}}
+							</td>
+							<td width='5%' style='text-align:right' class="totalrow" total_fixer='{{="%.2f" % (float(item.budgetlist.quantity) * float(item.budgetlist.price)) }}'>
+								{{="%.2f" % (float(item.budgetlist.quantity) * float(item.budgetlist.price)) }}						
+							</td>
+						</tr>
+					{{pass}}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<dl id="desglose" class="dl-horizontal pull-right">
+				<dt >Subtotal</dt>
+				<dd id="id_subtotal" style="text-align:right;">{{="%.2f"% float(budget.budgets.total)}}</dd>
+			</dl>
+			<div class="clearfix"></div>
+			<dl id="desglose_iva"  class="dl-horizontal pull-right">
+			<dt> IVA {{="%.2f" % budget.budgets.tax}}</dt>
+			<dd> {{="%.2f" % budget.budgets.totaltax}}</dd>
+			</dl>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			
+			<dl id="budget_total" class="dl-horizontal pull-right">
+				<dt>TOTAL PRESUPUESTO:</dt>
+				<dd> <span></span> {{="%.2f" % (float(budget.budgets.total)+float(budget.budgets.totaltax))}}{{="€"}}</dd>
+			</dl>
+
+		</div>
+	</div>
+</div>
+
+{{else:}}
+	{{redirect(URL(request.application,'administrator','billing'))}}
+{{pass}}
+
+
+
+<script type="text/javascript">
+
+	jQuery(document).ready(function() {
+
+	
+		var taxes={}
+	
+		jQuery("tbody tr").each(function(){ 
+			
+
+
+			var tax = jQuery(this).children('td.taxes').html();
+			var number_total= Number(parseFloat(jQuery(this).children('td.totalrow').html()).toFixed(2));
+			var number_tax= (Number(parseFloat(tax).toFixed(2))* number_total/100).toFixed(2);
+
+			if (taxes[tax]) {
+				taxes[tax].content_tax.push(number_tax);
+
+			}else{
+				taxes[tax]={label_tax:tax, content_tax:[number_tax]}
+			}
+
+
+
+		}); 
+		
+	});
+
+	function printbudget() {
+		window.location = "{{=URL(request.application,'budgets', 'printbudget', args=budget.budgets.id)}}";
+	}
+</script>

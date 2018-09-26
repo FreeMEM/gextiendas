@@ -1,0 +1,175 @@
+{{extend 'layout_grove.html'}}
+
+ <!--LayerSlider begin-->
+
+<!-- Note: Layerslider is configured in js/grove-slider.js -->
+<div class="hidden-xs">
+    <div id="layerslider" style="width: 100%; height: 405px; margin: 0px auto; ">
+
+
+        <div class="ls-layer" style="transition2d:5;">
+            <img class="ls-bg" width="1920" height="406" src="{{=URL('static','img/slides/bg-one.jpg')}}" alt="Slider Background">
+
+            <img  class="ls-s-1" width="492" height="323" src="{{=URL('static','img/slides/texto1.png')}}" alt="Cloud" 
+                  style="top:35px; left:70px; durationin : 1250; durationout : 1250;">
+
+            <div class="ls-s-1 x-large-caption" 
+                 style="top:130px; left:600px; delayin : 700; slidedirection : fade; slideoutdirection : fade; text-align:center;">
+                <div><strong>Crea tiendas online</strong></div>
+                <div><strong>¡GRATIS! para siempre</strong></div>
+            </div>
+            <div class="ls-s-3" style="top:280px; left:680px; durationin:1250; durationout:1250; delayin:300;">
+
+                <div class="btn-group">
+                    {{if settings.prelaunch==True:}}
+                        <a class="btn btn-grove-one btn-xlg btn-bold" href="{{=URL(request.application, 'communications','prelaunch')}}">
+                    {{else:}}
+                        <a class="btn btn-grove-one btn-xlg btn-bold" href="{{=URL(request.application, 'account','newshop')}}">
+                    {{pass}}
+                    <!-- <a class="btn btn-grove-one btn-xlg btn-bold" href="{{#=URL('default','register')}}"> -->
+                        <i class="glyphicons cloud"><i> </i> </i> <span>   Crea tu tienda <strong> gratis </strong>ahora</span>
+                    </a>
+                </div>
+
+               
+            </div>
+        </div>   
+
+        <div class="ls-layer" style="transition2d:5;">
+            <img class="ls-bg" width="2000" height="406" src="{{=URL('static','img/slides/bg-two.jpg')}}" alt="Slider Background">
+
+
+            <img  class="ls-s-1" width="397" height="397" src="{{=URL('static','img/slides/texto2.png')}}" alt="Cloud" 
+                  style="top:5px; left:90px; durationin : 1250; durationout : 1250;">
+
+            <div class="ls-s-1 x-large-caption" 
+                 style="top:110px; left:540px; delayin : 700; slidedirection : fade; slideoutdirection : fade; text-align:center;">
+                <div><strong>Paga sólo si vendes</strong></div>
+                <div><strong>sin cuotas mensuales</strong></div>
+            </div>
+            <div class="ls-s-3" style="top:280px; left:645px; durationin:1250; durationout:1250; delayin:300;">
+
+                <div class="btn-group">
+                    {{if settings.prelaunch==True:}}
+                        <a class="btn btn-grove-one btn-xlg btn-bold" href="{{=URL(request.application, 'communications','prelaunch')}}">
+                    {{else:}}
+                        <a class="btn btn-grove-one btn-xlg btn-bold" href="{{=URL(request.application, 'account','newshop')}}">
+                    {{pass}}
+                    <!-- <a class="btn btn-grove-one btn-xlg btn-bold" href="{{#=URL('default','register')}}"> -->                    
+                        <i class="glyphicons cloud"><i></i></i> <span>   Crea tu tienda ahora</span>
+                    </a>
+                </div>
+
+               
+            </div>
+        </div>
+            
+
+
+        <div class="ls-layer" style="transition2d:5;">
+            <img class="ls-bg" width="2002" height="407" src="{{=URL('static','img/slides/bg-three.jpg')}}" alt="Slider Background">
+
+            <img  class="ls-s-1" width="596" height="380" src="{{=URL('static','img/slides/up-sales.png')}}" alt="Develop" 
+                  style="top:15px; left:500px; durationin : 1250; durationout : 1250;">
+
+            <div class="ls-s-1 large-caption" 
+                 style="top:100px; left:50px; delayin : 750; slidedirection : fade; slideoutdirection : fade; text-align:center;">
+                <div><strong>{{="Y si vas en serio"}}</strong></div>
+                <div><strong>{{="y quieres elevar tus ventas,"}}</strong></div>
+                <div><strong>{{="ahorra con la tarifa plana"}}</strong></div>
+            </div>
+            <div class="ls-s-3" style="top:280px; left:130px; durationin:1250; durationout:1250; delayin:300;">
+
+                <div class="btn-group">
+                    {{if settings.prelaunch==True:}}
+                        <a class="btn btn-grove-one btn-xlg btn-bold" href="{{=URL(request.application, 'communications','prelaunch')}}">
+                    {{else:}}
+                        <a class="btn btn-grove-one btn-xlg btn-bold" href="{{=URL(request.application, 'account','newshop')}}">
+                    {{pass}}
+                    <!-- <a class="btn btn-grove-one btn-xlg btn-bold" href="{{#=URL('default','register')}}"> -->                    
+                        <i class="glyphicons cloud"><i> </i> </i> <span>   Crea tu tienda ahora</span>
+                    </a>
+                </div>   
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--LayerSlider end-->
+
+<!-- Layerslider substitute on x-small devices -->
+<div class="widewrapper pagetitle visible-xs">
+    <div class="container">
+        <h1>Tu plataforma experta para la gestión de tiendas online</h1>        
+    </div>
+</div> 
+
+<div class="widewrapper">
+    <div class="container">
+        <div class="row features">
+            <div class="col-md-4 feature">
+                <h3><a class="glyphicons shopping_cart"><i></i></a>Tiendas Web basadas en Prestashop</h3>
+                <p>{{="Prestashop es la plataforma preferida por los expertos en comercio eléctronico. Dispone de más de 300 funcionalidades, miles de plantillas, pasarelas de pago, es segura, potente y con más de 3 millones de usuarios."}}</p>
+            </div>
+            <div class="col-md-4 feature">
+                <h3><i class="glyphicons keys"><i></i></i>{{="¡Comienza a vender ya!"}}</h3>
+                <p>{{=XML("Crea tu tienda gratis al instante y si quieres optar por nuestras herramientas para vender más, elige nuestros planes o configúralos según tus necesidades. Disfrutarás con nuestro servicio")}}</p>
+            </div> 
+            <div class="col-md-4 feature">
+                <h3><i class="glyphicons road"><i></i></i>{{="Gestión experta en E-Commerce"}}</h3>
+                <p>{{=XML("¿Vas en serio y quieres vender más o integrar tu comercio físico con el de internet?. Podemos ser tu departamento experto: requisitos legales, posicionamiento web, mail marketing, desarrollos a medida.")}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="widewrapper strong-highlight">
+        <div class="container calltoaction" style="padding:0px">
+            <blockquote>"Conectamos personas, descubrimos clientes juntos."</blockquote>
+            
+        </div>
+    </div>
+
+{{lastposts = db(db.blog.public==True).select(db.blog.ALL, orderby=~db.blog.id, limitby=(0,4), cache=(cache.ram, 150), cacheable=True)}}
+{{if lastposts:}}
+    <div class="widewrapper">
+        <div class="container content">
+            <div class="row">
+                <div class="col-sm-12">
+<!--                     <div class="showroom-controls">
+                        <div class="links">Publicaciones de blog recientes <i class="verticalSeparator"></i> <a href="{{#=URL(request.application, 'blog','index')}}">Todos las publicaciones</a></div>
+                    </div> -->
+                    <div class="row">
+                            {{for post in lastposts:}}
+                                {{url=URL(request.application, 'blog','show', args=post.urlfriendly)}}
+                                <div class="showroom-item blog-item col-sm-3">
+                                    <div class="image">
+                                        {{if post.image!=None:}}
+                                            <img src="{{=URL(request.application, 'blog', 'download',args=db.images(post.image).imagemobile)}}"  class="img-responsive" alt="Blog Thumbnail"/>
+                                        {{else:}}
+                                            <img src="{{=URL('static','img/blog/blog-map.png')}}"  class="img-responsive" alt="Blog Thumbnail">
+                                        {{pass}}
+                                        <a href ="{{=url}}" class="overlay">
+                                            <i class="glyphicons search"><i></i></i>
+                                        </a>
+                                    </div>
+                                    <div class="content">
+                                        <h3><a href="{{=url}}">{{=post.title}}</a></h3>
+                                        <span class="subtitle">
+                                            <a href="{{=url}}">{{=post.subtitle}}</a>
+                                        </span>
+                                    </div>
+                                </div>
+                            {{pass}}
+                    <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{{pass}}
+
+
+
+

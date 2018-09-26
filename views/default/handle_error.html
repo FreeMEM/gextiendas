@@ -1,0 +1,57 @@
+{{extend 'layout_grove.html'}}
+
+<div class="widewrapper pagetitle">
+	<div class="container">
+		<h1>{{=code}} {{=error}}</h1>
+		
+	</div>
+</div>
+
+<div class="widewrapper">
+	{{if code=="404":}}
+		<div class="container e404">
+			<h1>404</h1>
+
+			<p>
+				{{=T("Sorry, the page you are trying to reach is unavailable!")}}
+			</p>
+
+			<p>
+				<h3>{{="¿Y ahora qué?"}}</h3>
+				vuelve a la {{=rlink}} y encuentra tu camino.
+			</p>
+		</div>
+	{{elif code=="500":}}
+		<div class="container e404">
+			<p>
+				{{="Se ha generado una alerta e informado del error por correo electrónico a los administradores del sistema"}}
+			</p>
+
+			<p>
+				{{if not settings.production:}}
+					{{=XML(ticket_url)}}
+				{{pass}}
+
+			</p>
+			<p>
+				<h3>{{="¿Y ahora qué?"}}</h3>
+				vuelve a la {{=rlink}} y encuentra tu camino.
+			</p>
+		</div>
+	{{else:}}
+		<div class="container e404">
+			
+
+			<p>
+				{{=T("Sorry, the page you are trying to reach is unavailable!")}}
+			</p>
+
+			<p>
+				<h3>{{="¿Y ahora qué?"}}</h3>
+				vuelve a la {{=rlink}} y encuentra tu camino.
+			</p>
+		</div>
+
+	{{pass}}
+
+</div>

@@ -1,0 +1,99 @@
+{{extend 'layout_grove.html'}}
+
+<div class='container content'>
+
+	<div style="min-height:400px;">
+		{{if records>0:}}
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					{{if records>=items_per_page:}}
+						<div class="pull pull-right">
+							{{=pagination}}
+						</div>
+					{{pass}}
+					<div class="pull pull-left">
+						{{="Número de contratos: %s" % records}}
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<table class="table table-hover table-striped well" style="font-size:12px">
+						<thead>
+							<tr>
+								<th>{{="Tienda"}}</th>
+								<th>{{="Producto"}}</th>
+								<th>{{="Cant."}}</th>
+								<th>{{="Precio"}}</th>
+								<th>{{="Periodicidad"}}</th>
+								<th>{{="Autorenove"}}</th>
+								<th>{{="Fecha inicio"}}</th>
+								<th>{{="Fecha renovación"}}</th>
+								<th>{{="Caducidad"}}</th>
+								
+								<th>{{="Forma de pago"}}</th>
+							</tr>
+						</thead>
+						<tbody>
+						{{for cp in contractedproducts:}}
+								{{
+									start=""
+									renove=""
+									expiration=""
+									if cp.contractedproducts.start:
+										start = cp.contractedproducts.start.strftime("%d/%m/%Y %H:%M")
+										pass
+									if cp.contractedproducts.renove:
+										renove = cp.contractedproducts.renove.strftime("%d/%m/%Y %H:%M")
+										pass
+									if cp.contractedproducts.expiration:
+										expiration = cp.contractedproducts.expiration.strftime("%d/%m/%Y %H:%M")
+										pass
+
+									period={'month':'mensual','hours':'hora','days':'diariamente','week':'semanal','year':'anual',None:''}
+
+								}}
+								
+							<tr id="{{=cp.contractedproducts.id}}" style="cursor:pointer;">
+								<td width="15%">{{=cp.shop.host}}</td>
+								<td width="25%">{{=cp.products.name}}</a></td>
+								<td width="1%">{{=cp.contractedproducts.quantity}}</a></td>
+								<td width="1%">{{=cp.products.price}}{{="€"}}</a></td>
+								<td width="1%">{{=period[cp.contractedproducts.period]}}</a></td>
+								<td width="1%">{{
+												if cp.contractedproducts.autorenove==True: 
+													=XML("<span class='glyphicon glyphicon-ok'></span>")
+												else:
+													=XML("<i class='glyphicon glyphicon-remove'><i></i></i>")
+												pass
+												}}</td>
+								<td width="10%">{{=start}}</td>
+								<td width="10%">{{=renove}}</td>
+								<td width="10%">{{=expiration}}</td>
+								
+								<td width="1%">{{=("",cp.contractedproducts.paymentmethod)[cp.contractedproducts.paymentmethod!=None]}}</td>
+								<td></td>
+							</tr>
+						{{pass}}
+						</tbody>
+					</table>
+				</div>
+			</div>	
+			{{if records>=items_per_page:}}
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<div class="pull pull-right">
+						{{=pagination}}	
+					</div>
+				</div>
+			</div>
+			{{pass}}
+		{{else:}}
+		
+			<div class="alert alert-info">
+				{{="No hay pedidos"}} 
+			</div>
+		
+		{{pass}}
+	</div>
+</div>
